@@ -1,7 +1,7 @@
 # PC3.GL GPU
 Viewer helps observing 3-arrays in real-time using GPU and fluid rendering.
 
-![pc3 viewer](docs/pc3.gl.png "pc3 viewer")
+![pc3 viewer](./pc3.gl.png "pc3 viewer")
 
 ## Keys
 | key   | description | 
