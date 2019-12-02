@@ -7,10 +7,11 @@ A streamlined pc viewers and utilities for 3-arrays:
 | ------------ | ------------ |
 |[pc3 gpu viewer](./docs/readme_pc3_gpu.md)|
 [pc3 cpu viewer](./docs/readme_pc3_cpu.md)
+| rec-play      | record and playback 3d sensor data |
 
 
 ## Utilities
 | utility      | description  | 
 | ------------ | ------------ |
-| depth_utils.py | mapping from depth to meters |
+| mapping.py | mapping of spaces to meters, etc.. |
 
