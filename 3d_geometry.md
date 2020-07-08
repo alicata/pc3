@@ -1,4 +1,7 @@
-# 3D Processing Techniques
+# 3D Mesh Processing
+aka `dot(V,U)*U`
+
+
 ## Point, Plane, Distances
 * s,t,a,b,c : scalars
 * p,q,p0,q0 : absolute coorinate points
