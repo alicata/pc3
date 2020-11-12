@@ -1,47 +1,67 @@
+import itertools as it
+import numpy as np
 from pc3_gpu import PC3
-
 
 class Viewer(PC3):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.o = dict()
+        self.o['proj']  = it.cycle(['perp', 'ortho']) 
+        self.o['fps']  = it.cycle([30, 1, 0]) 
+        self.o['scale'] = it.cycle([0.5, 0.25, 0.125, 0.0625, 0.03, 1]) 
 
     def key_event(self, key, action, modifiers):
         # Key presses
         if action == self.wnd.keys.ACTION_PRESS:
-            if key == self.wnd.keys.SPACE:
-                print("SPACE key was pressed")
 
-            # Using modifiers (shift and ctrl)
+            if modifiers.shift:
+                if key == self.wnd.keys.SPACE:
+                    self.cam.reset()
 
-            if key == self.wnd.keys.Z and modifiers.shift:
-                print("Shift + Z was pressed")
-                
-            if key == self.wnd.keys.A:
-                self.cam.axis_slide(['z'], [1])
+            elif  modifiers.ctrl:
+                if key == self.wnd.keys.S:
+                    self.cam.op['scale'] = next(self.o['scale']) 
 
-            if key == self.wnd.keys.W:
-                self.cam.axis_slide(['z'], [-1])
+                if key == self.wnd.keys.P:
+                    self.cam.op['proj'] = next(self.o['proj']) 
 
-            if key == self.wnd.keys.I:
-                print("cam_pos: " + str(self.cam.cam_pos))
-                print("cam_tar: " + str(self.cam.cam_target))
+                if key == self.wnd.keys.F:
+                    self.cam.op['fps'] = next(self.o['fps'])
 
-            if key == self.wnd.keys.Z and modifiers.ctrl:
-                print("ctrl + Z was pressed")
+            else:
+                if key == self.wnd.keys.W:
+                    self.cam.axis_slide(['z'], [1])
 
-        # Key releases
+                if key == self.wnd.keys.S:
+                    self.cam.axis_slide(['z'], [-1])
+
+                if key == self.wnd.keys.A:
+                    self.cam.axis_slide(['x'], [-1])
+
+                if key == self.wnd.keys.D:
+                    self.cam.axis_slide(['x'], [1])
+
+                if key == self.wnd.keys.I:
+                    self.cam.axis_slide(['y'], [1])
+
+                if key == self.wnd.keys.J:
+                    self.cam.axis_slide(['y'], [-1])
+
+                if key == self.wnd.keys.I:
+                    print("cam_pos: " + str(self.cam.cam_pos))
+                    print("cam_tar: " + str(self.cam.cam_target))
+
+                if key == self.wnd.keys.F:
+                    # fps=inf : 1 frame then stop to fps=0 
+                    self.cam.op['fps'] = np.inf 
+
         elif action == self.wnd.keys.ACTION_RELEASE:
             if key == self.wnd.keys.SPACE:
-                print("SPACE key was released")
-            if key == self.wnd.keys.A:
-                self.cam.axis_slide(['z'], [0])
+                self.cam.axis_slide(['x','y','z'], [0,0,0])
 
-            if key == self.wnd.keys.W:
-                self.cam.axis_slide(['z'], [0])
-
-    def mouse_position_event(self, x, y):
-        print("Mouse position:", x, y)
+    #def mouse_position_event(self, x, y):
+    #    print("Mouse position:", x, y)
 
     def mouse_drag_event(self, x, y):
         print("Mouse drag:", x, y)

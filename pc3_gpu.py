@@ -1,9 +1,12 @@
 import numpy as np
 import os
 import cv2
+import os
+import itertools as it
+import glob
+import time
 
 from pyrr import Matrix44
-
 import moderngl
 import moderngl_window as mglw
 
@@ -17,13 +20,12 @@ def depth_to_xyz(depth8):
     z = depth8.flatten()
     return x, y, z
 
-def xyz_to_gl(x,y,z):
+def xyz_to_gl(x,y,z, dim):
     """Convert point cloud in top-left z-pos-away to gl:
         gl: x positive-to-right, y bottom-up, z-positive-towards cam.
     """
-    z_max = np.max(z)
-    w, h = x[-1], y[-1]
-    x = x - w/2
+    w, h, z_max = dim 
+    x = w - (x + w/2)
     y = h - y - h/2
     z = -(z_max/2 -z)
     return x, y, z
@@ -35,21 +37,23 @@ class Dataset:
     def load_point_data(self, filepath='data/depth8.png'):
         """Load depth8 image (rs cs) to opengl cordinate system"""
         depth8 = cv2.imread(filepath)[:,:,0]
+            
         depth8 = cv2.resize(depth8, (256, 256), interpolation=cv2.INTER_NEAREST)
         h, w = depth8.shape
         d = 1
 
-        x = np.tile(np.arange(w), w)
-        y = np.repeat(np.arange(h), h)
+        x = np.tile(np.arange(w), w).flatten()
+        y = np.repeat(np.arange(h), h).flatten()
         z = depth8.flatten() * 1.0
 
-        x, y, z = xyz_to_gl(x,y,z) 
+        min_z, max_z = 0, 255 
+        x = x[z>min_z]
+        y = y[z>min_z]
+        z = z[z>min_z]
+
+        x, y, z = xyz_to_gl(x,y,z, [w, h, 255]) 
         pts = np.dstack([x, y, z])
-        pts = pts[0][z < 0]
-        # pack into (1, 65536, 3) shape
-        #x = x - w/2
-        #y = h - y - h/2
-        #z = -z
+        #pts = pts[0][z < 0]
         return pts, w*h, (w, h, d)
 
     def gen_point_data(self):
@@ -67,7 +71,7 @@ class Dataset:
 
 class Window(mglw.WindowConfig):
     gl_version = (3, 3)
-    title = "ModernGL Window"
+    title = "pc3"
     window_size = (2*640, 2*480)
     aspect_ratio = window_size[0] / window_size[1]
     resizable = True
@@ -88,23 +92,33 @@ class Camera:
     def __init__(self, win_size):
         self.aspect_ratio = win_size[0] / win_size[1]
         self.win = win_size
-        self.fov = 85.0
-        self.cam_pos = [0, 0, 255]
+        self.reset()
+
+    def reset(self):
+        self.fov = 90.0
+        self.cam_center = np.array([0, 0, -300])
+        self.cam_pos = self.cam_center + np.array([0.0, 0.0, 0.0])
         self.cam_target = [0, 0, 0]
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
-
-    def orbit(self, time):
+        self.op = {}
+        self.op['proj'] = 'ortho'
+        self.op['scale']= 0.25 
+        self.op['fps'] = 30
+    
+    def orbit(self, t):
         """Make camera orbit around a path."""
-        angle = time * 0.4 
-        r = max(self.win[0], self.win[1]) / 2
-        self.cam_pos = [np.cos(angle)*r,  0, np.sin(angle)*r]
+        angle = np.sin(np.pi/2) # np.sin(time*(1 + np.abs(np.sin(time*0.01))) ) * 0.3 - 1.6 
+        r = t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
+        pos = np.array([np.cos(angle)*r,  0, np.sin(angle)*r])
+        self.cam_pos =  (pos - 0*self.cam_center)
 
-    def step(self, time):
+    def step(self, t):
         """Step through motion trajectory."""
         for dim in range(3):
-            self.cam_pos[dim] += self.stepper[dim]
-        self.orbit(time) 
+            self.cam_center[dim] += self.stepper[dim]
+        self.cam_pos = self.cam_center
+        # self.orbit(t) 
 
     def axis_slide(self, axis, deltas):
         """Slide along one or more axis."""
@@ -112,10 +126,15 @@ class Camera:
         for a, d in zip(axis, deltas):
             self.stepper[ax[a]] =d
 
-    def update_pose(self, time):
-        self.step(time)
+    def update_pose(self, t):
+        self.step(t)
+
         self.lookat = Matrix44.look_at(self.cam_pos, self.cam_target, self.cam_up)
-        self.proj = Matrix44.perspective_projection(self.fov, self.aspect_ratio, 0.1, 5000.0)
+        if self.op['proj'] == 'perp':
+            self.proj = Matrix44.perspective_projection(self.fov, self.aspect_ratio, 0.1, 5000.0)
+        else: 
+            a=1024*self.op['scale']
+            self.proj = Matrix44.orthogonal_projection(-a, a, -a, a, -a*4, a*4) 
         return self.mvp()
 
     def mvp(self):
@@ -174,7 +193,7 @@ class PC3(Window):
                     float b = -(v_vert.z-128)/255.0;
                     float r = 1.0 - b;
 
-                    f_color = vec4(lum*r, 0.0, lum*b, 1.0);
+                    f_color = vec4(lum*r, abs(sin(b*9.0)), 0.6*b, 1.0);
 
                     //f_color = vec4(v_vert.z / 255.0, v_vert.z  / 255.0, v_vert.z / 255.0, 1.0);
                 }
@@ -185,9 +204,16 @@ class PC3(Window):
         self.mvp = self.prog['Mvp']
         self.light = self.prog['Light']
         self.cam = Camera(PC3.window_size)
+        self.time = dict.fromkeys({'render', 'render:load'}, 0)
+        pattern = os.environ.get('PC3_FILEPATH', False)
+        if pattern is False:
+            print("specify input file in PC3_FILEPATH") 
+            exit(0)
+        self.filepath = it.cycle(glob.glob(pattern))
 
         ds = Dataset()
-        self.points, self.num_samples, self.dim = ds.load_point_data('data/depth8.png')
+        self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
+
         self.scene = self.load_scene('cube.obj')
 
         # Add a new buffer into the VAO wrapper in the scene.
@@ -199,13 +225,36 @@ class PC3(Window):
         # Create the actual vao instance (auto mapping in action)
         self.vao = vao_wrapper.instance(self.prog)
 
-    def render(self, time, frame_time):
-        self.ctx.clear(.02, .02, .02)
+    def render(self, t, frame_time):
+        self.ctx.clear(.02, .02, 0.2)
         self.ctx.enable(moderngl.DEPTH_TEST)
 
-        mvp = self.cam.update_pose(time)
+        # step through frames or change continous fps: 
+        # fps = inf  : step frame
+        # fps = 0    : pause
+        # fps = 1    : 1 fps
+        # fps = 30   : 30 fps
+        if self.cam.op['fps'] == np.inf:
+            self.cam.op['fps'] = 0
+            update_frame = True
+        elif self.cam.op['fps'] != 0 and (time.time()-self.time['render:load']) > (1/self.cam.op['fps']): 
+            update_frame = True
+        else:
+            update_frame = False
+
+        if update_frame is True:
+            try:
+                filepath = next(self.filepath)
+                print(filepath)
+                self.points, self.num_samples, self.dim = Dataset().load_point_data(filepath)
+                self.time['render:load'] = time.time()
+            except:
+                pass
+
+        mvp = self.cam.update_pose(t)
         self.mvp.write(mvp.astype('f4').tobytes())
         self.light.value = (1.0, 1.0, 1.0)
-
         self.instance_data.write(self.points.astype('f4').tobytes())
         self.vao.render(instances=self.num_samples)
+
+        self.time['render'] = time.time()
