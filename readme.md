@@ -36,6 +36,7 @@ pc3 /data/*.png`
 - [ ] transformer: volume shaping by surface shifting
 - [ ] probe: interactive data sharing with clipboard ('clip://topic')
 - [ ] probe: interactive data sharing with screenshot, mouse ('screen://topic')
+- [ ] gui: imgui options and menus for parametrization
 
 
 
