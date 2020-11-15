@@ -1,17 +1,27 @@
-# pc3 utilities
+# pc3
 
-A streamlined pc viewers and utilities for 3-arrays:
+A streamlined perception tool and utilities for 3-arrays:
 
-## APPS 
-| app      | description  | 
-| ------------ | ------------ |
-|[pc3 gpu viewer](./docs/readme_pc3_gpu.md)|
-[pc3 cpu viewer](./docs/readme_pc3_cpu.md)
-| rec-play      | record and playback 3d sensor data |
+## Features
+* fluid depth structure visualiation
+* zooming, and perspective views
+* guided observer camera motions
 
+## Usage:
+```
+pc3 /data/*.png`
+```
+|[read more](./docs/readme_pc3_gpu.md)|
 
-## Utilities
+## pc3 utilities
 | utility      | description  | 
 | ------------ | ------------ |
-| mapping.py | mapping of spaces to meters, etc.. |
+| pc3     | induce depth perception from 3-array data |
+| pc3 map | mapping of spaces to meters, etc.. |
+
+
+# Roadamp
+- [ ] visualiation: point cloud transparency
+
+
 
