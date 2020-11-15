@@ -1,5 +1,4 @@
 # pc3
-
 A streamlined perception tool and utilities for 3-arrays:
 
 ## Features
@@ -11,16 +10,17 @@ A streamlined perception tool and utilities for 3-arrays:
 ```
 pc3 /data/*.png`
 ```
-|[read more](./docs/readme_pc3_gpu.md)|
+[read more](./docs/readme_pc3_gpu.md)
 
-## pc3 utilities
+## Utilities
 | utility      | description  | 
 | ------------ | ------------ |
 | pc3     | induce depth perception from 3-array data |
 | pc3 map | mapping of spaces to meters, etc.. |
 
 
-# Roadamp
+## Roadamp
+- [ ] data sharing: inter-process shared memory uri 'mem://topic'
 - [ ] visualiation: point cloud transparency
 
 
