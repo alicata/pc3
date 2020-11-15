@@ -4,7 +4,7 @@ Perception tools to reveal the depth structure in 3-arrays.
 # Observation Approach - Observer, Motion Control, Probes.  
 During array visualization the observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file producer is anaware of being observed. 
 
-![perc3ption](docs/archi.png "pc3")
+![perc3ption](/docs/archi.png)
 
 
 ## Features
