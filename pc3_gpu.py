@@ -232,20 +232,23 @@ class PC3(Window):
 
         self.points = None
         self.scene = self.load_scene('cube.obj')
+        self.vao_wrapper = self.scene.root_nodes[0].mesh.vao
 
         ds = Dataset()
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
+        self.init_dynamic_data()
 
+
+    def init_dynamic_data(self):
         # Add a new buffer into the VAO wrapper in the scene.
         # This is simply a collection of named buffers that is auto mapped
         # to attributes in the vertex shader with the same name.
-        self.instance_data = self.ctx.buffer(reserve=12 * self.num_samples)
+        self.instance_data = self.ctx.buffer(reserve=12 * self.num_samples, dynamic=True)
 
-        vao_wrapper = self.scene.root_nodes[0].mesh.vao
-        vao_wrapper.buffer(self.instance_data, '3f/i', 'in_move')
+        self.vao_wrapper.buffer(self.instance_data, '3f/i', 'in_move')
         # Create the actual vao instance (auto mapping in action)
-        self.vao = vao_wrapper.instance(self.prog)
+        self.vao = self.vao_wrapper.instance(self.prog)
 
     def render(self, t, frame_time):
         self.ctx.clear(.02, .02, 0.2)
@@ -277,6 +280,7 @@ class PC3(Window):
         self.mvp.write(mvp.astype('f4').tobytes())
         self.light.value = (1.0, 1.0, 1.0)
         if self.points is not None:
+            self.instance_data.clear()
             self.instance_data.write(self.points.astype('f4').tobytes())
             self.vao.render(instances=self.num_samples)
 
