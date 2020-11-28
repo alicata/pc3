@@ -8,6 +8,8 @@ class Viewer(PC3):
         super().__init__(**kwargs)
         self.o = dict()
         self.o['proj']  = it.cycle(['perp', 'ortho']) 
+        self.o['layer']  = it.cycle(['free', 'orbit']) 
+        self.o['modulation']  = it.cycle(['none', 'disparity']) 
         self.o['fps']  = it.cycle([30, 1, 0]) 
         self.o['scale'] = it.cycle([0.5, 0.25, 0.125, 0.0625, 0.03, 1]) 
 
@@ -26,6 +28,12 @@ class Viewer(PC3):
                 if key == self.wnd.keys.P:
                     self.cam.op['proj'] = next(self.o['proj']) 
 
+                if key == self.wnd.keys.O:
+                    self.cam.op['layer'] = next(self.o['layer']) 
+
+                if key == self.wnd.keys.M:
+                    self.cam.op['modulation'] = next(self.o['modulation']) 
+
                 if key == self.wnd.keys.F:
                     self.cam.op['fps'] = next(self.o['fps'])
 
@@ -42,10 +50,10 @@ class Viewer(PC3):
                 if key == self.wnd.keys.D:
                     self.cam.axis_slide(['x'], [1])
 
-                if key == self.wnd.keys.I:
+                if key == self.wnd.keys.Q:
                     self.cam.axis_slide(['y'], [1])
 
-                if key == self.wnd.keys.J:
+                if key == self.wnd.keys.E:
                     self.cam.axis_slide(['y'], [-1])
 
                 if key == self.wnd.keys.I:

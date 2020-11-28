@@ -103,22 +103,41 @@ class Camera:
         self.stepper = [0, 0, 0]
         self.op = {}
         self.op['proj'] = 'ortho'
+        self.op['layer'] = 'free'
+        self.op['modulation'] = 'none'
         self.op['scale']= 0.25 
         self.op['fps'] = 30
     
     def orbit(self, t):
         """Make camera orbit around a path."""
-        angle = np.sin(np.pi/2) # np.sin(time*(1 + np.abs(np.sin(time*0.01))) ) * 0.3 - 1.6 
-        r = t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
-        pos = np.array([np.cos(angle)*r,  0, np.sin(angle)*r])
+        angle = 1.05 * t*np.pi/2 
+        r = 130 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
+        pos = np.array([np.cos(angle)*r,  1 , np.sin(angle)*r])
         self.cam_pos =  (pos - 0*self.cam_center)
+
+    def disparity_shift(self, t):
+        if self.op['layer'] in  ["free"]:
+            shift = float(int(t*20) % 8)
+            val = np.array([0, 1, 2, 1, 0, -1, -2, -1])
+            shift = val[int(shift)] * 0.5
+            self.cam_pos[0] += shift 
+            self.cam_target[0] += shift
+        elif self.op['layer'] in ["orbit"]:
+            shift = float(int(t*100) % 3 - 1)
+            shift *= 1
+            self.cam_pos[1] += shift
+            self.cam_target[1] += shift/2
 
     def step(self, t):
         """Step through motion trajectory."""
-        for dim in range(3):
-            self.cam_center[dim] += self.stepper[dim]
-        self.cam_pos = self.cam_center
-        # self.orbit(t) 
+        if self.op['layer'] == "free":
+            for dim in range(3):
+                self.cam_center[dim] += self.stepper[dim]
+            self.cam_pos = self.cam_center
+        elif self.op['layer'] == "orbit":
+            self.orbit(t) 
+        if self.op['modulation'] == "disparity":
+            self.disparity_shift(t)
 
     def axis_slide(self, axis, deltas):
         """Slide along one or more axis."""
@@ -211,15 +230,18 @@ class PC3(Window):
             exit(0)
         self.filepath = it.cycle(glob.glob(pattern))
 
+        self.points = None
+        self.scene = self.load_scene('cube.obj')
+
         ds = Dataset()
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
-        self.scene = self.load_scene('cube.obj')
 
         # Add a new buffer into the VAO wrapper in the scene.
         # This is simply a collection of named buffers that is auto mapped
         # to attributes in the vertex shader with the same name.
         self.instance_data = self.ctx.buffer(reserve=12 * self.num_samples)
+
         vao_wrapper = self.scene.root_nodes[0].mesh.vao
         vao_wrapper.buffer(self.instance_data, '3f/i', 'in_move')
         # Create the actual vao instance (auto mapping in action)
@@ -254,7 +276,8 @@ class PC3(Window):
         mvp = self.cam.update_pose(t)
         self.mvp.write(mvp.astype('f4').tobytes())
         self.light.value = (1.0, 1.0, 1.0)
-        self.instance_data.write(self.points.astype('f4').tobytes())
-        self.vao.render(instances=self.num_samples)
+        if self.points is not None:
+            self.instance_data.write(self.points.astype('f4').tobytes())
+            self.vao.render(instances=self.num_samples)
 
         self.time['render'] = time.time()
