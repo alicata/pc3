@@ -26,7 +26,7 @@ pc3 /data/*.png`
 | pc3 map | mapping of spaces to meters, etc.. |
 
 ## Roadamp
-- [.] visualization: loading mesh as observation volume
+- [ ] visualization: loading mesh as observation volume
 - [ ] probe: inter-process data sharing with uri 'mem://topic'
 - [ ] transformer: basis alignment between reference and time-lapsed frames
 - [ ] visualization: volume filling by penetration
