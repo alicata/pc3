@@ -8,6 +8,12 @@ Viewer helps observing 3-arrays in real-time using GPU and fluid rendering.
 | ------------ | ------------ |
 |A    | LEFT      | 
 |D    | RIGHT     | 
+|W    | FORWARD |
+|S    | BACK | 
+|Q  | UP    | 
+|E   | DOWN |
+|CTL+P| PERP/ORTHO      | 
+|CTL+M   | CAM MODULATION     | 
 
 ### Example
 ```
