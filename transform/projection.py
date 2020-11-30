@@ -18,7 +18,7 @@ class Frustum:
         self.name = "symmetric frustum"
         self.unit = "meter"
 
-    def from_intrinsics(focal_length, fov_h, fov_v, max_distance=100):
+    def from_intrinsics(self, focal_length, fov_h, fov_v, max_distance=100):
         """Make symmetric frustum from camera intrinsics"""
         n = flocal_length
         f = max_distance

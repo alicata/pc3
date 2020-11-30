@@ -1,5 +1,6 @@
-import transform.projection
 import numpy as np
+import cv2 
+import transform.projection
 
 
 def make_grid(n, z_in_front_negative=True): 
@@ -28,10 +29,31 @@ def make_grid(n, z_in_front_negative=True):
     return grid
 
 def edit(n):
-    grid =  make_grid(n, z_in_front_negative=False)
+    grid =  make_grid(n, z_in_front_negative=True)
     screen_size = np.array([320,240])
 
     [print(p) for p in grid]
+
+    frame_buffer = np.zeros(screen_size, dtype=np.uint8)
+    frustum = transform.projection.Frustum()
+    frustum.from_intrinsics(focal_length=0.01, fov_h=90, fov_v=60, max_distance=10)
+    P = frustum.perspective_matrix()
+
+    """world and eye space are same, make grid points homogeneous"""
+    vertex_position_eye = np.insert(grid, 3, values=1, axis=1)
+    vertex_position_clip = P * vertex_position_eye 
+    vertex_position_ndc = grid / vertex_position_clip[:, 3]
+
+    """ NDC to screen coordinates """
+    W, H = screen_size
+    vertex_position_scr = (vertex_position_ndc + 1)/2 * np.array([W, H, 1])
+    vertex_position_scr[:,1] = H - vertex_position_scr[:,1]
+    
+    pixel_points = vertex_position_scr[:,0:2]
+
+    pix.render.line(frame_buffer, pixel_points)   
+    cv2.imshow('projection - clip space', frame_buffer)
+    cv2.waitKey(0)
     
 
 
