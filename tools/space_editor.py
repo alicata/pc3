@@ -2,6 +2,7 @@ import numpy as np
 import cv2 
 import transform.projection
 import pix.render
+import geometry.mesh
 
 
 def make_grid(n, z_in_front_negative=True): 
@@ -51,11 +52,15 @@ def edit(n):
     """ NDC to screen coordinates """
     screen_x = (ndc_x + 1)/2 * W
     screen_y = H * (1 - (ndc_y + 1)/2)
-    pixel_points = np.vstack([screen_x, screen_y]).T
+    screen_z = 255 * (ndc_z + 1)/2
+
+    pixel_points = np.vstack([screen_x, screen_y, screen_z]).T
     pixel_points = pixel_points[pixel_points[:,0]<W] 
     pixel_points= pixel_points[pixel_points[:,0]>=0] 
     pixel_points = pixel_points[pixel_points[:,1]<H] 
     pixel_points= pixel_points[pixel_points[:,1]>=0] 
+    
+    pixel_points = pixel_points.astype(np.uint)
     
     pix.render.points(frame_buffer, pixel_points)   
     cv2.imshow('projection - clip space', frame_buffer)
