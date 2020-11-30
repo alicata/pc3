@@ -20,5 +20,10 @@ def line(ima, p0, p1, color=[255, 255, 255], th=1):
     """
     if len(p0) == 3:
         return depth_line(ima, p0, p1, color, th)
-    else
+    else:
         return line_2d(ima, p0, p1, color, th)
+
+def points(ima, pts, color=[255, 255, 255], th=2):
+    for p in pts:
+        center = tuple((int(p[0]), int(p[1])))
+        cv2.circle(ima, center, th, color, -1)

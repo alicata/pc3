@@ -1,4 +1,4 @@
-import numpy
+import numpy as np
 
 
 """class Frustum
@@ -20,7 +20,7 @@ class Frustum:
 
     def from_intrinsics(self, focal_length, fov_h, fov_v, max_distance=100):
         """Make symmetric frustum from camera intrinsics"""
-        n = flocal_length
+        n = focal_length
         f = max_distance
         r = n * (fov_h * np.pi / 360.0) 
         t = n * (fov_v * np.pi / 360.0) 

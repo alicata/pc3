@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 
 import transform.projection
+import pix.render
 
 
 def make_grid(n, z_in_front_negative=True): 
@@ -8,7 +9,7 @@ def make_grid(n, z_in_front_negative=True):
 
     dim_count = n + 1
     x_val = np.linspace(-n/4, n/4, dim_count)
-    z_val = np.linspace(0, n/2, dim_count)
+    z_val = np.linspace(1, 1 + n/2, dim_count)
 
     """camera view (eye) space requirs negative z in front.
        sometimes W=V, sometimes W[z] = -V[z]
@@ -19,8 +20,8 @@ def make_grid(n, z_in_front_negative=True):
     x_coord = np.meshgrid(x_val, z_val)[0].flatten()
     z_coord = np.meshgrid(x_val, z_val)[1].flatten()
     
-    y0 = np.ones(dim_count*dim_count)*0
-    y1 = np.ones(dim_count*dim_count)*1
+    y0 = np.ones(dim_count*dim_count)*-0.25
+    y1 = np.ones(dim_count*dim_count)*0.25
 
     base = np.array(list(zip(x_coord, y0, z_coord)))
     top = np.array(list(zip(x_coord, y1, z_coord)))
@@ -30,28 +31,33 @@ def make_grid(n, z_in_front_negative=True):
 
 def edit(n):
     grid =  make_grid(n, z_in_front_negative=True)
-    screen_size = np.array([320,240])
+    screen_size = [640, 480]
+    W, H = screen_size
 
     [print(p) for p in grid]
 
-    frame_buffer = np.zeros(screen_size, dtype=np.uint8)
+    frame_buffer = np.zeros((H, W), dtype=np.uint8)
     frustum = transform.projection.Frustum()
     frustum.from_intrinsics(focal_length=0.01, fov_h=90, fov_v=60, max_distance=10)
     P = frustum.perspective_matrix()
 
     """world and eye space are same, make grid points homogeneous"""
     vertex_position_eye = np.insert(grid, 3, values=1, axis=1)
-    vertex_position_clip = P * vertex_position_eye 
-    vertex_position_ndc = grid / vertex_position_clip[:, 3]
+    vertex_position_clip = vertex_position_eye @ P
+    ndc_x = vertex_position_clip[:,0] / -vertex_position_eye[:, 2]
+    ndc_y = vertex_position_clip[:,1] / -vertex_position_eye[:, 2]
+    ndc_z = vertex_position_clip[:,2] / -vertex_position_eye[:, 2]
 
     """ NDC to screen coordinates """
-    W, H = screen_size
-    vertex_position_scr = (vertex_position_ndc + 1)/2 * np.array([W, H, 1])
-    vertex_position_scr[:,1] = H - vertex_position_scr[:,1]
+    screen_x = (ndc_x + 1)/2 * W
+    screen_y = H * (1 - (ndc_y + 1)/2)
+    pixel_points = np.vstack([screen_x, screen_y]).T
+    pixel_points = pixel_points[pixel_points[:,0]<W] 
+    pixel_points= pixel_points[pixel_points[:,0]>=0] 
+    pixel_points = pixel_points[pixel_points[:,1]<H] 
+    pixel_points= pixel_points[pixel_points[:,1]>=0] 
     
-    pixel_points = vertex_position_scr[:,0:2]
-
-    pix.render.line(frame_buffer, pixel_points)   
+    pix.render.points(frame_buffer, pixel_points)   
     cv2.imshow('projection - clip space', frame_buffer)
     cv2.waitKey(0)
     
