@@ -27,6 +27,7 @@ pc3 /data/*.png`
 
 ## Roadamp
 - [ ] visualization: loading mesh as observation volume
+- [ ] tool: space renderer (cpu)
 - [ ] probe: inter-process data sharing with uri 'mem://topic'
 - [ ] transformer: basis alignment between reference and time-lapsed frames
 - [ ] visualization: volume filling by penetration
