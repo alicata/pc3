@@ -9,7 +9,9 @@ import time
 from pyrr import Matrix44
 import moderngl
 import moderngl_window as mglw
+from moderngl_window import geometry
 
+import resource.effect.pointcloud
 
 
 def depth_to_xyz(depth8):
@@ -166,160 +168,35 @@ class PC3(Window):
     title = "PC3 Visualizer"
     gl_version = (3, 4)
 
-    def load_vertex_shader(self):
-        vertex_shader='''
-            #version 330
-
-            uniform mat4 Mvp;
-
-            in vec3 in_move;
-
-            in vec3 in_position;
-            in vec3 in_normal;
-
-            out vec3 v_vert;
-            out vec3 v_norm;
-
-            void main() {
-                float s = 1.0;
-                gl_Position = Mvp * vec4(s*in_position + in_move, 1.0);
-                v_vert = in_position + in_move;
-                v_norm = in_normal;
-            }
-            '''
-        return vertex_shader
-
-    def load_fragment_shader(self, name):
-
-        f_shader_firepit='''
-            #version 330
-
-            uniform vec3 Light;
-
-            in vec3 v_vert;
-            in vec3 v_norm;
-
-            out vec4 f_color;
-
-            void main() {
-                float dist = length((v_vert - 0))/255.0;
-                float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.3 + 0.7;
-
-                //float proximity = 1.0 - length(v_vert) / 255.0;
-                lum = 1.0;
-
-                // front red back blue
-                float b = clamp(dist * 1.3, 0.0, 1.0);
-                float r = 1.0 - b;
-                f_color = vec4(lum*r, 0.1, lum*b, 1.0);
-
-            }
-        '''
-
-        f_shader_modulated_y='''
-            #version 330
-
-            uniform vec3 Light;
-
-            in vec3 v_vert;
-            in vec3 v_norm;
-
-            out vec4 f_color;
-
-            void main() {
-                float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.7 + 0.3;
-                float b = 1.0 - (-(v_vert.z))/255.0;
-                b *= 0.5;
-                float dy = 15.0;
-                float g = (int(abs(v_vert.y))%int(dy))/dy;
-                float r = 1.0 - b;
-
-                f_color = vec4(r, g, b, 1.0);
-            }
-        '''
-
-        f_shader_modulated='''
-            #version 330
-
-            uniform vec3 Light;
-
-            in vec3 v_vert;
-            in vec3 v_norm;
-
-            out vec4 f_color;
-
-            void main() {
-                float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.7 + 0.3;
-                //f_color = vec4(v_vert.z / 255.0, 0.0, 1.0 - v_vert.z / 255.0, 1.0);
-
-                // center is red and lit
-                //float b = (abs(v_vert.z*2)/255.0);
-                //float r = 1.0 - b;
-
-                // front red back blue
-                float b = -(v_vert.z-128)/255.0;
-                float r = 1.0 - b;
-                f_color = vec4(lum*r, abs(sin(b*9.0)), 0.6*b, 1.0);
-                //f_color = vec4(v_vert.z / 255.0, v_vert.z  / 255.0, v_vert.z / 255.0, 1.0);
-            }
-        '''
-        fragment_shader = {
-            'modulated' : f_shader_modulated,
-            'mody' : f_shader_modulated_y,
-            'firepit' : f_shader_firepit
-        }
-        return fragment_shader[name]
-
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.prog = self.ctx.program(
-            vertex_shader=self.load_vertex_shader(),
-            fragment_shader=self.load_fragment_shader("mody"),
-        )
-
         self.off = {'x' : 0, 'y' : 0 ,'z' : 0}
-        self.mvp = self.prog['Mvp']
-        self.light = self.prog['Light']
         self.cam = Camera(PC3.window_size)
         self.time = dict.fromkeys({'render', 'render:load'}, 0)
+
         pattern = os.environ.get('PC3_FILEPATH', False)
         if pattern is False:
             print("specify input file in PC3_FILEPATH") 
             exit(0)
         self.filepath = it.cycle(glob.glob(pattern))
-
-        self.points = None
-        self.scene = self.load_scene('cube.obj')
-        self.vao_wrapper = self.scene.root_nodes[0].mesh.vao
-
         ds = Dataset()
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
-        self.init_dynamic_data()
+        self.e = {'desc': 'effects'}
+        self.e['pc'] = resource.effect.pointcloud.Effect(self.ctx, self, self.num_samples)
+        self.e['pc'].init()
+ 
 
-
-    def init_dynamic_data(self):
-        # Add a new buffer into the VAO wrapper in the scene.
-        # This is simply a collection of named buffers that is auto mapped
-        # to attributes in the vertex shader with the same name.
-        self.instance_data = self.ctx.buffer(reserve=12 * self.num_samples, dynamic=True)
-
-        self.vao_wrapper.buffer(self.instance_data, '3f/i', 'in_move')
-        # Create the actual vao instance (auto mapping in action)
-        self.vao = self.vao_wrapper.instance(self.prog)
-
-    def render(self, t, frame_time):
-        self.ctx.clear(.05, .02, 0.3)
-
-        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+    def set_blending(self):
         self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
         #self.ctx.blend_func = moderngl.PREMULTIPLIED_ALPHA
         #self.ctx.blend_func = moderngl.DEFAULT_BLENDING
         self.ctx.blend_equation = moderngl.FUNC_ADD
         self.ctx.blend_equation = moderngl.MAX
 
+    def update_frame_data(self):
         # step through frames or change continous fps: 
         # fps = inf  : step frame
         # fps = 0    : pause
@@ -341,13 +218,17 @@ class PC3(Window):
                 self.time['render:load'] = time.time()
             except:
                 pass
+ 
+    def render(self, t, frame_time):
+        self.ctx.clear(.05, .02, 0.3)
+
+        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+        self.set_blending()
+
+        self.update_frame_data()
 
         mvp = self.cam.update_pose(t)
-        self.mvp.write(mvp.astype('f4').tobytes())
-        self.light.value = (1.0, 1.0, 1.0)
-        if self.points is not None:
-            self.instance_data.clear()
-            self.instance_data.write(self.points.astype('f4').tobytes())
-            self.vao.render(instances=self.num_samples)
+        self.e['pc'].render(mvp, self.points, self.num_samples)
 
         self.time['render'] = time.time()
+
