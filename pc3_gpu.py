@@ -184,11 +184,11 @@ class PC3(Window):
         ds = Dataset()
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
-        self.e = {'desc': 'effects'}
-        self.e['pc'] = resource.effect.pointcloud.Effect(self.ctx, self, self.num_samples)
+        self.e = {}
+        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self)
+        self.e['pc'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
         self.e['pc'].init()
  
-
     def set_blending(self):
         self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
         #self.ctx.blend_func = moderngl.PREMULTIPLIED_ALPHA
@@ -197,11 +197,14 @@ class PC3(Window):
         self.ctx.blend_equation = moderngl.MAX
 
     def update_frame_data(self):
-        # step through frames or change continous fps: 
-        # fps = inf  : step frame
-        # fps = 0    : pause
-        # fps = 1    : 1 fps
-        # fps = 30   : 30 fps
+        """Update points data at each frame.
+
+           Step through frames or change continous fps: 
+           # fps = inf  : step frame
+           # fps = 0    : pause
+           # fps = 1    : 1 fps
+           # fps = 30   : 30 fps
+        """
         if self.cam.op['fps'] == np.inf:
             self.cam.op['fps'] = 0
             update_frame = True
@@ -228,7 +231,7 @@ class PC3(Window):
         self.update_frame_data()
 
         mvp = self.cam.update_pose(t)
-        self.e['pc'].render(mvp, self.points, self.num_samples)
+        self.e['pc'].render(mvp, self.points)
 
         self.time['render'] = time.time()
 
