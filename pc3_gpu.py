@@ -216,6 +216,28 @@ class PC3(Window):
             }
         '''
 
+        f_shader_modulated_y='''
+            #version 330
+
+            uniform vec3 Light;
+
+            in vec3 v_vert;
+            in vec3 v_norm;
+
+            out vec4 f_color;
+
+            void main() {
+                float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.7 + 0.3;
+                float b = 1.0 - (-(v_vert.z))/255.0;
+                b *= 0.5;
+                float dy = 15.0;
+                float g = (int(abs(v_vert.y))%int(dy))/dy;
+                float r = 1.0 - b;
+
+                f_color = vec4(r, g, b, 1.0);
+            }
+        '''
+
         f_shader_modulated='''
             #version 330
 
@@ -237,14 +259,13 @@ class PC3(Window):
                 // front red back blue
                 float b = -(v_vert.z-128)/255.0;
                 float r = 1.0 - b;
-
                 f_color = vec4(lum*r, abs(sin(b*9.0)), 0.6*b, 1.0);
-
                 //f_color = vec4(v_vert.z / 255.0, v_vert.z  / 255.0, v_vert.z / 255.0, 1.0);
             }
         '''
         fragment_shader = {
             'modulated' : f_shader_modulated,
+            'mody' : f_shader_modulated_y,
             'firepit' : f_shader_firepit
         }
         return fragment_shader[name]
@@ -255,7 +276,7 @@ class PC3(Window):
 
         self.prog = self.ctx.program(
             vertex_shader=self.load_vertex_shader(),
-            fragment_shader=self.load_fragment_shader("firepit"),
+            fragment_shader=self.load_fragment_shader("mody"),
         )
 
         self.off = {'x' : 0, 'y' : 0 ,'z' : 0}
@@ -290,8 +311,14 @@ class PC3(Window):
         self.vao = self.vao_wrapper.instance(self.prog)
 
     def render(self, t, frame_time):
-        self.ctx.clear(.02, .02, 0.2)
-        self.ctx.enable(moderngl.DEPTH_TEST)
+        self.ctx.clear(.05, .02, 0.3)
+
+        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+        self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
+        #self.ctx.blend_func = moderngl.PREMULTIPLIED_ALPHA
+        #self.ctx.blend_func = moderngl.DEFAULT_BLENDING
+        self.ctx.blend_equation = moderngl.FUNC_ADD
+        self.ctx.blend_equation = moderngl.MAX
 
         # step through frames or change continous fps: 
         # fps = inf  : step frame
