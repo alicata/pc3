@@ -1,9 +1,7 @@
 ![perc3ption](/docs/perc_vision.png)
 
-# pc3
-Perception tools to reveal the depth structure in 3-arrays. 
 
-![perc3ption](/docs/archi.png)
+Perception tools to reveal the depth structure in 3-arrays. 
 
 # Observer, Motion Control, Probes.  
 During array visualization the observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file producer is anaware of being observed. 
@@ -26,6 +24,8 @@ pc3 /data/*.png`
 | ------------ | ------------ |
 | pc3     | induce depth perception from 3-array data |
 | pc3 map | mapping of spaces to meters, etc.. |
+
+![perc3ption](/docs/archi.png)
 
 ## Roadamp
 - [ ] visualization: loading mesh as observation volume
