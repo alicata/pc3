@@ -1,3 +1,5 @@
+![perc3ption](/docs/perc_vision.png)
+
 # pc3
 Perception tools to reveal the depth structure in 3-arrays. 
 
