@@ -78,7 +78,7 @@ class Window(mglw.WindowConfig):
     window_size = (2*640, 2*480)
     aspect_ratio = window_size[0] / window_size[1]
     resizable = True
-    samples = 4
+    samples = 0
 
     resource_dir = os.path.normpath(os.path.join(__file__, '../data'))
     print('res dir: ', resource_dir)
@@ -169,6 +169,17 @@ class PC3(Window):
     title = "PC3 Visualizer"
     gl_version = (3, 4)
 
+    def load_config(self):
+        cfg = { 
+            "op" : 
+            {
+            'theme' : 'mody', 
+            'collider' : 'off',
+            "xray" : "off",
+            "-":"",
+            }
+        }
+        return cfg 
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -176,7 +187,8 @@ class PC3(Window):
         self.off = {'x' : 0, 'y' : 0 ,'z' : 0}
         self.cam = Camera(PC3.window_size)
         self.time = dict.fromkeys({'render', 'render:load'}, 0)
-        self.op = {'theme' : 'mody', 'collider' : 'off'}
+        self.cfg = self.load_config() 
+        self.op = self.cfg['op']
 
         pattern = os.environ.get('PC3_FILEPATH', False)
         if pattern is False:
@@ -237,12 +249,21 @@ class PC3(Window):
         self.update_frame_data()
         mvp = self.cam.update_pose(t)
 
-        self.ctx.enable(moderngl.DEPTH_TEST)
-        #self.ctx.disable(moderngl.BLEND)
-        self.ctx.blend_equation = moderngl.MAX
+        if self.op['xray'] == 'off':
+            self.ctx.enable(moderngl.DEPTH_TEST)
+            self.ctx.disable(moderngl.BLEND)
+        else:
+            self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+            self.ctx.blend_equation = moderngl.MAX
         self.e[self.op['theme']].render(mvp, self.points)
 
-        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+        if self.op['xray'] != 'off':
+            self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+        elif self.op['xray'] == 'seethru':
+            ctx.blend_equation = moderngl.FUNC_ADD
+        elif self.op['xray'] == 'translucent':
+            ctx.blend_equation = moderngl.MAX
+
         if self.op['collider'] != 'off':
             self.e['zone'].render(mvp)
 

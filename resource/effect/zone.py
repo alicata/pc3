@@ -174,12 +174,9 @@ class Effect:
                 max_count = len(points[0])
             self.vbo.clear()
             self.vbo.write(points.astype('f4').tobytes())
-            ctx.blend_equation = moderngl.FUNC_ADD
-            ctx.blend_equation = moderngl.MIN
             self.vao.render(instances=max_count, mode=moderngl.TRIANGLES)
 
             ctx.disable(moderngl.BLEND)
-            ctx.blend_equation = moderngl.FUNC_ADD
             self.vao.render(instances=max_count, mode=moderngl.LINES)
 
 
