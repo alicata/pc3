@@ -12,7 +12,7 @@ import moderngl_window as mglw
 from moderngl_window import geometry
 
 import resource.effect.pointcloud
-import resource.effect.cube
+import resource.effect.zone 
 
 
 def depth_to_xyz(depth8):
@@ -107,7 +107,6 @@ class Camera:
         self.op = {}
         self.op['proj'] = 'ortho'
         self.op['layer'] = 'free'
-        self.op['theme'] = 'mody'
         self.op['modulation'] = 'none'
         self.op['scale']= 0.25 
         self.op['fps'] = 30
@@ -116,7 +115,7 @@ class Camera:
         """Make camera orbit around a path."""
         angle = 1.05 * t*np.pi/2 
         r = 130 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
-        pos = np.array([np.cos(angle)*r,  1 , np.sin(angle)*r])
+        pos = np.array([np.cos(angle)*r,  28 , np.sin(angle)*r])
         self.cam_pos =  (pos - 0*self.cam_center)
 
     def disparity_shift(self, t):
@@ -177,6 +176,7 @@ class PC3(Window):
         self.off = {'x' : 0, 'y' : 0 ,'z' : 0}
         self.cam = Camera(PC3.window_size)
         self.time = dict.fromkeys({'render', 'render:load'}, 0)
+        self.op = {'theme' : 'mody', 'collider' : 'off'}
 
         pattern = os.environ.get('PC3_FILEPATH', False)
         if pattern is False:
@@ -186,15 +186,17 @@ class PC3(Window):
         ds = Dataset()
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
-        self.e = {}
-        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self, "mody")
-        self.e['mody'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
-        self.e['mody'].init()
+        def add_effect(e, effect, effect_name, num_samples):
+            theme = {'mody' : 'mody', 'firepit' : 'firepit', 'zone':'illuminated'}
+            progasm = effect.ProgramAssembler(self.ctx, self, theme[effect_name])
+            e[effect_name] = effect.Effect(progasm, num_samples)
+            e[effect_name].init()
 
-        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self, "firepit")
-        self.e['firepit'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
-        self.e['firepit'].init()
- 
+        self.e = {}
+        add_effect(self.e, resource.effect.pointcloud, 'mody', self.num_samples)
+        add_effect(self.e, resource.effect.pointcloud, 'firepit', self.num_samples)
+        add_effect(self.e, resource.effect.zone, 'zone', 1)
+
     def set_blending(self):
         #self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
         #self.ctx.blend_func = moderngl.PREMULTIPLIED_ALPHA
@@ -231,13 +233,19 @@ class PC3(Window):
     def render(self, t, frame_time):
         self.ctx.clear(.05, .02, 0.3)
 
-        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
-        self.set_blending()
 
         self.update_frame_data()
-
         mvp = self.cam.update_pose(t)
-        self.e[self.cam.op['theme']].render(mvp, self.points)
+
+        self.ctx.enable(moderngl.DEPTH_TEST)
+        #self.ctx.disable(moderngl.BLEND)
+        self.ctx.blend_equation = moderngl.MAX
+        self.e[self.op['theme']].render(mvp, self.points)
+
+        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
+        if self.op['collider'] != 'off':
+            self.e['zone'].render(mvp)
+
 
         self.time['render'] = time.time()
 
