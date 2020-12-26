@@ -36,7 +36,7 @@ class ProgramAssembler:
         """Harcoded unit cube (x = [-0.5, +0.5]))
            it will be stretched to +/ 64 by vertex shader.
         """
-        self.scene = self.loader.load_scene('cube.obj')
+        self.scene = self.loader.load_scene('/tmp/pc3/data/zone.obj')
         self.vao = self.scene.root_nodes[0].mesh.vao
 
     def load_vertex_shader(self):
@@ -54,7 +54,7 @@ class ProgramAssembler:
             out vec3 v_norm;
 
             void main() {
-                float s = 128.0;
+                float s = 1.0;
                 gl_Position = Mvp * vec4(s*in_position + in_move, 1.0);
                 v_vert = in_position + in_move;
                 v_norm = in_normal;
