@@ -1,6 +1,12 @@
+
+from pyrr import Matrix44
+import moderngl
+import moderngl_window as mglw
+from moderngl_window import geometry
+
 class Cube:
-    def __init__(self):
-        pass
+    def __init__(self, ctx):
+        self.ctx = ctx 
 
     def init(self):
         shader_source = {
@@ -45,14 +51,14 @@ class Cube:
                 }
             ''',
         }
-        self.cube = geometry.cube(size=(100,100,100))
+        self.cube = geometry.cube(size=(10,10,10))
         self.vol_prog = self.ctx.program(**shader_source)
         self.vol_prog['pos_offset'].value = (1.1, 0, 0)
         self.vol_vao = self.cube.instance(self.vol_prog)
 
         self.m_proj = Matrix44.perspective_projection(
-            75, self.wnd.aspect_ratio,  # fov, aspect
-            0.1, 100.0,  # near, far
+            85, .0833,  # fov, aspect
+            0.1, 250.0,  # near, far
             dtype='f4',
         )
 
@@ -75,11 +81,13 @@ class Cube:
                 (self.view_buffer, 2),
             ],
         )
+        self.z = -5.0
 
 
-    def render(self):
+    def render(self, t):
         rotation = Matrix44.from_eulers((t,t,t), dtype='f4')
-        translation = Matrix44.from_translation((0.0, 0.0, -5.0), dtype='f4')
+        self.z += 0.01
+        translation = Matrix44.from_translation((0.0, 0.0, self.z), dtype='f4')
         modelview = translation * rotation
         self.view_buffer.write(modelview)
         with self.scope1:

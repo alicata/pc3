@@ -10,17 +10,17 @@ from moderngl_window import geometry
 
 
 class ProgramAssembler:
-    def __init__(self, ctx, loader):
+    def __init__(self, ctx, loader, theme="mody"):
         self.ctx = ctx
-        self.load_program(loader)
+        self.load_program(loader, theme)
         self.set_program_inputs()
         self.create_vertex_data()
 
-    def load_program(self, loader):
+    def load_program(self, loader, theme):
         self.loader = loader
         self.prog = self.ctx.program(
             vertex_shader=self.load_vertex_shader(),
-            fragment_shader=self.load_fragment_shader("mody"),
+            fragment_shader=self.load_fragment_shader(theme),
         )
 
     def set_program_inputs(self):

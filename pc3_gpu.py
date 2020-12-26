@@ -12,6 +12,7 @@ import moderngl_window as mglw
 from moderngl_window import geometry
 
 import resource.effect.pointcloud
+import resource.effect.cube
 
 
 def depth_to_xyz(depth8):
@@ -106,6 +107,7 @@ class Camera:
         self.op = {}
         self.op['proj'] = 'ortho'
         self.op['layer'] = 'free'
+        self.op['theme'] = 'mody'
         self.op['modulation'] = 'none'
         self.op['scale']= 0.25 
         self.op['fps'] = 30
@@ -185,12 +187,16 @@ class PC3(Window):
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
         self.e = {}
-        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self)
-        self.e['pc'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
-        self.e['pc'].init()
+        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self, "mody")
+        self.e['mody'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
+        self.e['mody'].init()
+
+        progasm = resource.effect.pointcloud.ProgramAssembler(self.ctx, self, "firepit")
+        self.e['firepit'] = resource.effect.pointcloud.Effect(progasm, self.num_samples)
+        self.e['firepit'].init()
  
     def set_blending(self):
-        self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
+        #self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
         #self.ctx.blend_func = moderngl.PREMULTIPLIED_ALPHA
         #self.ctx.blend_func = moderngl.DEFAULT_BLENDING
         self.ctx.blend_equation = moderngl.FUNC_ADD
@@ -231,7 +237,7 @@ class PC3(Window):
         self.update_frame_data()
 
         mvp = self.cam.update_pose(t)
-        self.e['pc'].render(mvp, self.points)
+        self.e[self.cam.op['theme']].render(mvp, self.points)
 
         self.time['render'] = time.time()
 
