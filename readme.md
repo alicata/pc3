@@ -39,6 +39,17 @@ pc3 /data/*.png`
 - [ ] probe: interactive data sharing with clipboard ('clip://topic')
 - [ ] probe: interactive data sharing with screenshot, mouse ('screen://topic')
 - [ ] gui: imgui options and menus for parametrization
+- [ ] engine: graph architecture and graph editing
+- [ ] visualization: x-ray vision
+- [ ] tool: remote source polling
+- [ ] visualization: theme library
+- [ ] engine: configuration, asset, and state management
+- [ ] engine: visual pattern recogntion trigges
+- [ ] engine: layers and scriptable objects
+- [ ] visualization: projection tooling (panini, 1, 2, 3 vanishing points)
+
+
+
 
 
 
