@@ -173,7 +173,7 @@ class PC3(Window):
         cfg = { 
             "op" : 
             {
-            'theme' : 'mody', 
+            'theme' : 'dark_to_bright', 
             'collider' : 'off',
             "xray" : "off",
             "-":"",
@@ -199,7 +199,8 @@ class PC3(Window):
         self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
 
         def add_effect(e, effect, effect_name, num_samples):
-            theme = {'mody' : 'mody', 'firepit' : 'firepit', 'zone':'illuminated'}
+            theme = {'mody' : 'mody', 'firepit' : 'firepit', 'zone':'illuminated',
+                'dark_to_bright' : 'dark_to_bright'}
             progasm = effect.ProgramAssembler(self.ctx, self, theme[effect_name])
             e[effect_name] = effect.Effect(progasm, num_samples)
             e[effect_name].init()
@@ -207,6 +208,7 @@ class PC3(Window):
         self.e = {}
         add_effect(self.e, resource.effect.pointcloud, 'mody', self.num_samples)
         add_effect(self.e, resource.effect.pointcloud, 'firepit', self.num_samples)
+        add_effect(self.e, resource.effect.pointcloud, 'dark_to_bright', self.num_samples)
         add_effect(self.e, resource.effect.zone, 'zone', 1)
 
     def set_blending(self):
@@ -243,7 +245,7 @@ class PC3(Window):
                 pass
  
     def render(self, t, frame_time):
-        self.ctx.clear(.05, .02, 0.3)
+        self.ctx.clear(.007, .005, 0.15)
 
 
         self.update_frame_data()
