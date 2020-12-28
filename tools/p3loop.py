@@ -26,7 +26,6 @@ def loop(data, file):
 
 def main():
     data = {'scale' : 2}
-    #file = "/home/pi/config/sm01/safety/lmt/safety1/depth8_camera1.png"
     file = sys.argv[1]
     while True:
         loop(data, file)
