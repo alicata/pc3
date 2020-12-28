@@ -1,6 +1,6 @@
 import itertools as it
 import numpy as np
-from pc3_gpu import PC3
+from pc3_engine import PC3
 
 class Viewer(PC3):
 
@@ -8,6 +8,9 @@ class Viewer(PC3):
         super().__init__(**kwargs)
         self.o = dict()
         self.o['proj']  = it.cycle(['perp', 'ortho']) 
+        self.o['theme'] = it.cycle(['mody', 'firepit', 'dark_to_bright', 'zone'])
+        self.o['collider'] = it.cycle(['off', 'zone'])
+        self.o['xray'] = it.cycle(['off', 'seethru', 'translucent'])
         self.o['layer']  = it.cycle(['free', 'orbit']) 
         self.o['modulation']  = it.cycle(['none', 'disparity']) 
         self.o['fps']  = it.cycle([30, 1, 0]) 
@@ -55,6 +58,15 @@ class Viewer(PC3):
 
                 if key == self.wnd.keys.E:
                     self.cam.axis_slide(['y'], [-1])
+
+                if key == self.wnd.keys.T:
+                    self.op['theme'] = next(self.o['theme']) 
+
+                if key == self.wnd.keys.C:
+                    self.op['collider'] = next(self.o['collider']) 
+
+                if key == self.wnd.keys.X:
+                    self.op['xray'] = next(self.o['xray']) 
 
                 if key == self.wnd.keys.I:
                     print("cam_pos: " + str(self.cam.cam_pos))
