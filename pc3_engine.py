@@ -245,7 +245,7 @@ class PC3(Window):
                 pass
  
     def render(self, t, frame_time):
-        self.ctx.clear(.007, .005, 0.15)
+        self.ctx.clear(.009, .007, 0.17)
 
 
         self.update_frame_data()

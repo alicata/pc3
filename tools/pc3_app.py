@@ -1,6 +1,6 @@
 import itertools as it
 import numpy as np
-from pc3_gpu import PC3
+from pc3_engine import PC3
 
 class Viewer(PC3):
 
