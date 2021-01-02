@@ -1,38 +1,17 @@
 import cv2
 import sys
+import os
 import numpy as np
 import json
 
 import pywavefront
+import transform.frame as tf
 
-
-def xy2z(i):
-    if i is None:
-        return None
-
-    h, w = i.shape[0:2]
-    x = np.tile(i[0,:], h).flatten()
-    y = np.repeat(i[0,:], w).flatten()
-    z = i[:,:,0]
-    j = np.zeros((256, w, 3), np.uint8)
-    
-    for n in range(w*h):
-        xx = n % w
-        yy = n // w
-         
-        zz = 255-z[yy,xx]
-
-        #print(xx, yy, zz, w, h)
-        if j[zz,xx][0] < yy:
-            j[zz,xx]=(yy,yy,yy)
-    return j
     
 
 def draw_quad_meshes(i, s, meshes, id, order=[0,1]):
 
     for d, mesh in enumerate(meshes):
-        #if d != id and id >= 0:
-        #    continue
         col = [(0, 255, 0), (255, 255, 0), (255, 0, 0 )]
         b, g, r = col[d]
         colf = (b, g, r)
@@ -106,40 +85,43 @@ def draw_pixel_layer(data, i):
 def loop(data, file):
     s = data['scale']
     meshes = data['meshes']
+    on = data['enabled']['layer']
+
     try:
-        i = cv2.imread(file);
+        i = cv2.imread(file)
         if i is None:
             return
 
         h, w = i.shape[0:2]
 
-        j = xy2z(i)
+        j = tf.domain_range_swap_yz(i)
         hj, wj = j.shape[0:2]
-        sj = s #int((w/wj)*s)
+        sj = s
         j = cv2.resize(j, (wj*sj, hj*sj), interpolation=cv2.INTER_NEAREST)
         draw_quad_meshes(j, s, meshes, -1, order=[0, 2])
         j = cv2.resize(j, (w*s, h*s))
         
         i = cv2.resize(i, (w*s, h*s), interpolation=cv2.INTER_NEAREST)
 
-        draw_pixel_layer(data, i)
-
-        if data['blank_red']:  
+        if on['pixels']:
+            draw_pixel_layer(data, i)
+        if on['blank_red']:  
             i[i.sum(axis=2)==0,2]=128
+        if on['meshes']:
+            draw_quad_meshes(i, s, meshes, -1, order=[0,1])
 
-        draw_quad_meshes(i, s, meshes, -1, order=[0,1])
-
-                
         cv2.imshow(file, np.hstack((i,j)))
         
         key = cv2.waitKey(100)
 
         if key == ord('r'):
-            data['blank_red'] = not data['blank_red']
-
+            on['blank_red'] = not on['blank_red']
+        if key == ord('m'):
+            on['meshes'] = not on['meshes']
+        if key == ord('p'):
+            on['pixels'] = not on['pixels']
         if key == ord('s'):
             data['scale'] = ((data['scale'] + 1) % 4) + 1
-
         if key == ord('q'):
             exit(0)
 
@@ -152,6 +134,11 @@ def loop(data, file):
 
 def get_data_from_config(config, name, id_string):
     data = {'scale' : 2, 'blank_red' : False, 'meshes' : [], 'count' : 0}
+    data['enabled'] = { 'layer' : {}}
+    data['enabled']['layer']['blank_red'] = False
+    data['enabled']['layer']['meshes'] = False
+    data['enabled']['layer']['pixels'] = False
+
 
     with open(config) as f:
         default = json.load(f)
@@ -180,17 +167,33 @@ def load_meshes(filepaths):
 
 
 def main():
+    
+    if len(sys.argv) <= 1:
+        print("usage: {} imagefile <layering.json> <config name> <viewpoint or instance id>")
+        print("example: {} imag.png layers.json room1 1".format(sys.argv[0]))
+        exit(0)
+        
     file = sys.argv[1]
 
     try:
         config = sys.argv[2]
         name = sys.argv[3]
-        id = sys.argv[4]
-        print(file, config, name, id)
+        try:
+            id = sys.argv[4]
+        except:
+            print("warning: id not specified, set id to default 1")
+            id = "1"
     except:
-        print("usage: {} imagefile <layering.json> <config name> <viewpoint or instance id>")
-        print("example: {} frame0020.png debug_reference.json room01 11")
-        exit(0)
+        config = os.environ.get('P3_CFG_PATH', "/tmp/pc3/cfg/layers.json")
+        name = "ref"
+        id = "1"
+
+    print("file   : ", file)
+    print("config :", config)
+    print("name   :", name)
+    print("id     :", id)
+
+
 
     data = get_data_from_config(config, name, id)
 
