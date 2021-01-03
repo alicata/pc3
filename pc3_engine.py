@@ -165,7 +165,7 @@ class PC3(Window):
     '''
     Point Cloud 
     '''
-    title = "PC3 Visualizer"
+    title = "p3rc3ption engine"
     gl_version = (3, 4)
 
     def load_config(self):
@@ -189,6 +189,15 @@ class PC3(Window):
         self.cfg = self.load_config() 
         self.op = self.cfg['op']
 
+        def get_mesh_files():
+            meshpattern = os.environ.get('P3_MESHPATH', False)
+            meshfiles = []
+            if meshpattern:
+                meshfiles = glob.glob(meshpattern)
+            return meshfiles
+
+        mesh_files = get_mesh_files()
+
         pattern = os.environ.get('PC3_FILEPATH', False)
         if pattern is False:
             print("specify input file in PC3_FILEPATH") 
@@ -204,11 +213,23 @@ class PC3(Window):
             e[effect_name] = effect.Effect(progasm, num_samples)
             e[effect_name].init()
 
-        self.e = {}
+        def add_zone(e, effect, mesh_path):
+            effect_name = 'zone'
+            progasm = effect.ProgramAssembler(self.ctx, self, mesh_path, 'illuminated')
+            e[effect_name].append(effect.Effect(progasm, 1))
+            e[effect_name][-1].init()
+
+        self.e = {'zone' : list()}
         add_effect(self.e, resource.effect.pointcloud, 'mody', self.num_samples)
         add_effect(self.e, resource.effect.pointcloud, 'firepit', self.num_samples)
         add_effect(self.e, resource.effect.pointcloud, 'dark_to_bright', self.num_samples)
-        add_effect(self.e, resource.effect.zone, 'zone', 1)
+
+        # build default collider zone
+        default_zone_filepath = os.path.join(os.environ.get('P3_HOME', ''), 'data/zone.obj')
+        add_zone(self.e, resource.effect.zone, default_zone_filepath)
+
+        for mesh_file in mesh_files:
+            add_zone(self.e, resource.effect.zone, mesh_file)
 
     def set_blending(self):
         #self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
@@ -256,7 +277,12 @@ class PC3(Window):
         else:
             self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
             self.ctx.blend_equation = moderngl.MAX
-        self.e[self.op['theme']].render(mvp, self.points)
+
+        if self.op['theme'] == 'zone':
+            for zone in self.e['zone']:
+                zone.render(mvp, self.points)
+        else:
+            self.e[self.op['theme']].render(mvp, self.points)
 
         if self.op['xray'] != 'off':
             self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
@@ -266,8 +292,9 @@ class PC3(Window):
             ctx.blend_equation = moderngl.MAX
 
         if self.op['collider'] != 'off':
-            self.e['zone'].enable({'fill':self.op['collider']=='fill'})
-            self.e['zone'].render(mvp)
+            for zone in self.e['zone']:
+                zone.enable({'fill':self.op['collider']=='fill'})
+                zone.render(mvp)
 
 
         self.time['render'] = time.time()

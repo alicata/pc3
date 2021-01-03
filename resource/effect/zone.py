@@ -10,11 +10,11 @@ from moderngl_window import geometry
 
 
 class ProgramAssembler:
-    def __init__(self, ctx, loader, theme="mody"):
+    def __init__(self, ctx, loader, fileapth, theme="mody"):
         self.ctx = ctx
         self.load_program(loader, theme)
         self.set_program_inputs()
-        self.create_vertex_data()
+        self.create_vertex_data(fileapth)
 
     def load_program(self, loader, theme):
         self.loader = loader
@@ -32,11 +32,11 @@ class ProgramAssembler:
         self.mvp = self.prog['Mvp']
         self.light = self.prog['Light']
   
-    def create_vertex_data(self):
+    def create_vertex_data(self, filepath):
         """Harcoded unit cube (x = [-0.5, +0.5]))
            it will be stretched to +/ 64 by vertex shader.
         """
-        self.scene = self.loader.load_scene('/tmp/pc3/data/zone.obj')
+        self.scene = self.loader.load_scene(filepath)
         self.vao = self.scene.root_nodes[0].mesh.vao
 
     def load_vertex_shader(self):
