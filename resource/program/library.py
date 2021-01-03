@@ -134,7 +134,7 @@ class FragmentProgram:
             in vec3 v_norm;
 
             out vec4 f_color;
-            float g = (v_vert.z+128)/255.0;
+            float g = min((16 - v_vert.z)/255.0, 1.0);
 
             void main() {
                 float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0);

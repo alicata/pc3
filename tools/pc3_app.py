@@ -9,7 +9,7 @@ class Viewer(PC3):
         self.o = dict()
         self.o['proj']  = it.cycle(['perp', 'ortho']) 
         self.o['theme'] = it.cycle(['mody', 'firepit', 'dark_to_bright', 'zone'])
-        self.o['collider'] = it.cycle(['off', 'zone'])
+        self.o['collider'] = it.cycle(['off', 'zone', 'fill'])
         self.o['xray'] = it.cycle(['off', 'seethru', 'translucent'])
         self.o['layer']  = it.cycle(['free', 'orbit']) 
         self.o['modulation']  = it.cycle(['none', 'disparity']) 

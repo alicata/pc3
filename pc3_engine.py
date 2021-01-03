@@ -13,25 +13,9 @@ from moderngl_window import geometry
 
 import resource.effect.pointcloud
 import resource.effect.zone 
+import transform.frame as tf
+from utils.m import *
 
-
-def depth_to_xyz(depth8):
-    """Convert depth image coordinate system to opengl cs."""
-    h, w = depth.shape[0:2]
-    x = np.tile(np.arange(w), w)
-    y = np.repeat(np.arange(h), h)
-    z = depth8.flatten()
-    return x, y, z
-
-def xyz_to_gl(x,y,z, dim):
-    """Convert point cloud in top-left z-pos-away to gl:
-        gl: x positive-to-right, y bottom-up, z-positive-towards cam.
-    """
-    w, h, z_max = dim 
-    x = w - (x + w/2)
-    y = h - y - h/2
-    z = -(z_max/2 -z)
-    return x, y, z
 
 class Dataset:
     def __init(self, dataset_name='default'):
@@ -54,7 +38,7 @@ class Dataset:
         y = y[z>min_z]
         z = z[z>min_z]
 
-        x, y, z = xyz_to_gl(x,y,z, [w, h, 255]) 
+        x, y, z = tf.xyz_device_to_eye_gl(x,y,z, [w, h, 255]) 
         pts = np.dstack([x, y, z])
         #pts = pts[0][z < 0]
         return pts, w*h, (w, h, d)
@@ -66,7 +50,7 @@ class Dataset:
         y = (np.repeat(np.arange(h), h))
         z = np.random.randint(0, 255, d*d) 
 
-        x, y, z = xyz_to_gl(x,y,z) 
+        x, y, z = tf.xyz_device_to_eye_gl(x,y,z) 
         coordinates = np.dstack([x, y, z])
 
         return coordinates, w*h, (w, h, d)
@@ -98,12 +82,15 @@ class Camera:
         self.reset()
 
     def reset(self):
+        self.world_size = vec3(256, 256, 256)
+        
         self.fov = 90.0
-        self.cam_center = np.array([0, 0, -300])
-        self.cam_pos = self.cam_center + np.array([0.0, 0.0, 0.0])
-        self.cam_target = [0, 0, 0]
+        self.cam_o = vec3(128, 128, 64)
+        self.cam_pos = self.cam_o
+        self.cam_target = vec3(128, 128, -128) 
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
+
         self.op = {}
         self.op['proj'] = 'ortho'
         self.op['layer'] = 'free'
@@ -116,7 +103,7 @@ class Camera:
         angle = 1.05 * t*np.pi/2 
         r = 130 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
         pos = np.array([np.cos(angle)*r,  28 , np.sin(angle)*r])
-        self.cam_pos =  (pos - 0*self.cam_center)
+        self.cam_pos = pos
 
     def disparity_shift(self, t):
         if self.op['layer'] in  ["free"]:
@@ -135,8 +122,8 @@ class Camera:
         """Step through motion trajectory."""
         if self.op['layer'] == "free":
             for dim in range(3):
-                self.cam_center[dim] += self.stepper[dim]
-            self.cam_pos = self.cam_center
+                self.cam_o[dim] += self.stepper[dim]
+            self.cam_pos = self.cam_o
         elif self.op['layer'] == "orbit":
             self.orbit(t) 
         if self.op['modulation'] == "disparity":
@@ -245,7 +232,7 @@ class PC3(Window):
                 pass
  
     def render(self, t, frame_time):
-        self.ctx.clear(.009, .007, 0.17)
+        self.ctx.clear(.008, .006, 0.16)
 
 
         self.update_frame_data()
@@ -267,6 +254,7 @@ class PC3(Window):
             ctx.blend_equation = moderngl.MAX
 
         if self.op['collider'] != 'off':
+            self.e['zone'].enable({'fill':self.op['collider']=='fill'})
             self.e['zone'].render(mvp)
 
 

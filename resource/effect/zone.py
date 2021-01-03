@@ -123,7 +123,7 @@ class ProgramAssembler:
 
             void main() {
                 float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.7 + 0.3;
-                f_color = vec4(lum, 1.0, lum, 1.0);
+                f_color = vec4(0.0, 1.0, 0.0, 0.5);
             }
         '''
         fragment_shader = {
@@ -139,8 +139,19 @@ class Effect:
         self.name = "zone"
         self.program_assembley = assembley
         self.max_samples = max_samples
+        self.on = {'fill' : False}
 
     def init(self):
+        wo, ho, ww, hw = 224, 171, 255, 255
+        # object to world matrix to multiply vy MVP before render
+        w = ww/(wo-1)
+        h = hw/(ho-1)
+        d = 1
+        self.obj_to_world = np.array([
+            [w,0,0,0],
+            [0,-h,0,0],
+            [0,0,-d,0],
+            [0,255,0,1]])
         self.vao_wrapper = self.program_assembley.vao
         self.init_dynamic_data()
 
@@ -156,6 +167,10 @@ class Effect:
         # Create the actual vao instance (auto mapping in action)
         self.vao = self.vao_wrapper.instance(assembley.prog)
 
+    def enable(self, on):
+        for k in on.keys():
+            self.on[k] = on[k] 
+
     def render(self, mvp_matrix, data=None, max_count=None):
         """Render with updated data, and transforming eye space to clip with MVP
            
@@ -163,7 +178,11 @@ class Effect:
                mvp : model view projection matrix (from model/world to clip)
                data : 3d point data with [0, N, 3] shape
 
-        """
+        """ 
+        M = mvp_matrix
+        P = self.obj_to_world
+        mvp_matrix = M * P 
+
         self.program_assembley.mvp.write(mvp_matrix.astype('f4').tobytes())
         self.program_assembley.light.value = (1.0, 1.0, 1.0)
         ctx = self.program_assembley.ctx
@@ -174,10 +193,11 @@ class Effect:
                 max_count = len(points[0])
             self.vbo.clear()
             self.vbo.write(points.astype('f4').tobytes())
-            self.vao.render(instances=max_count, mode=moderngl.TRIANGLES)
+            if self.on['fill']:
+                self.vao.render(instances=max_count, mode=moderngl.TRIANGLES)
 
             ctx.disable(moderngl.BLEND)
-            self.vao.render(instances=max_count, mode=moderngl.LINES)
+            self.vao.render(instances=max_count, mode=moderngl.LINE_STRIP)
 
 
 
