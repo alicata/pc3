@@ -79,6 +79,10 @@ class Viewer(PC3):
                 if key == self.wnd.keys.NUMBER_6:
                     self.cam.axis_slide(['y'], [1])
 
+                if key == self.wnd.keys.V:
+                    zone = self.e['zone']
+                    self.op['collider_selection'] = (self.op['collider_selection'] + 1) % (len(zone) + 1)
+                    print(self.op['collider_selection'], len(zone))
 
                 if key == self.wnd.keys.T:
                     self.op['theme'] = next(self.o['theme']) 

@@ -174,6 +174,7 @@ class PC3(Window):
             {
             'theme' : 'dark_to_bright', 
             'collider' : 'off',
+            'collider_selection' : 0, # all zone selected
             "xray" : "off",
             "-":"",
             }
@@ -292,9 +293,13 @@ class PC3(Window):
             ctx.blend_equation = moderngl.MAX
 
         if self.op['collider'] != 'off':
-            for zone in self.e['zone']:
-                zone.enable({'fill':self.op['collider']=='fill'})
-                zone.render(mvp)
+            for n, zone in enumerate(self.e['zone']):
+                sel = self.op['collider_selection']
+                zone_id = n + 1
+                # select all or just the active zone id
+                if sel == 0 or sel == zone_id: 
+                    zone.enable({'fill':self.op['collider']=='fill'})
+                    zone.render(mvp)
 
 
         self.time['render'] = time.time()
