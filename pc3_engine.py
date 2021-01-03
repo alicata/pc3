@@ -90,6 +90,7 @@ class Camera:
         self.cam_target = vec3(128, 128, -128) 
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
+        self.step_with_target = False 
 
         self.op = {}
         self.op['proj'] = 'ortho'
@@ -100,10 +101,11 @@ class Camera:
     
     def orbit(self, t):
         """Make camera orbit around a path."""
-        angle = 1.05 * t*np.pi/2 
-        r = 130 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
+        angle = self.op['scale'] * t*np.pi/2 
+        r = 230 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
         pos = np.array([np.cos(angle)*r,  28 , np.sin(angle)*r])
-        self.cam_pos = pos
+        self.cam_target = vec3(128, 128, -128) 
+        self.cam_pos = pos + self.cam_target
 
     def disparity_shift(self, t):
         if self.op['layer'] in  ["free"]:
@@ -121,9 +123,13 @@ class Camera:
     def step(self, t):
         """Step through motion trajectory."""
         if self.op['layer'] == "free":
+            speed = 1 #self.op['scale']
             for dim in range(3):
-                self.cam_o[dim] += self.stepper[dim]
-            self.cam_pos = self.cam_o
+                step = float(self.stepper[dim])
+                self.cam_pos[dim] += (speed*step)
+                if self.step_with_target:
+                    self.cam_target[dim] += (speed*step)
+            #self.cam_pos = self.cam_o
         elif self.op['layer'] == "orbit":
             self.orbit(t) 
         if self.op['modulation'] == "disparity":
@@ -133,7 +139,13 @@ class Camera:
         """Slide along one or more axis."""
         ax = {'z' : 2, 'y' : 1, 'x' : 0}
         for a, d in zip(axis, deltas):
-            self.stepper[ax[a]] =d
+            self.stepper[ax[a]] = d
+        self.step_with_target = False 
+
+    def axis_trans(self, axis, deltas):
+        """Slide along one or more axis."""
+        self.axis_slide(axis, deltas)
+        self.step_with_target = True
 
     def update_pose(self, t):
         self.step(t)

@@ -41,23 +41,44 @@ class Viewer(PC3):
                     self.cam.op['fps'] = next(self.o['fps'])
 
             else:
-                if key == self.wnd.keys.W:
+                if key == self.wnd.keys.S:
                     self.cam.axis_slide(['z'], [1])
 
-                if key == self.wnd.keys.S:
+                if key == self.wnd.keys.W:
                     self.cam.axis_slide(['z'], [-1])
 
+                if key == self.wnd.keys.NUMBER_2:
+                    self.cam.axis_slide(['z'], [1])
+
+                if key == self.wnd.keys.NUMBER_5:
+                    self.cam.axis_slide(['z'], [-1])
+
+
                 if key == self.wnd.keys.A:
-                    self.cam.axis_slide(['x'], [-1])
+                    self.cam.axis_trans(['x'], [-1])
 
                 if key == self.wnd.keys.D:
+                    self.cam.axis_trans(['x'], [+1])
+
+                if key == self.wnd.keys.NUMBER_1:
                     self.cam.axis_slide(['x'], [1])
 
+                if key == self.wnd.keys.NUMBER_3:
+                    self.cam.axis_slide(['x'], [-1])
+
+
                 if key == self.wnd.keys.Q:
-                    self.cam.axis_slide(['y'], [1])
+                    self.cam.axis_trans(['y'], [-1])
 
                 if key == self.wnd.keys.E:
+                    self.cam.axis_trans(['y'], [1])
+
+                if key == self.wnd.keys.NUMBER_4:
                     self.cam.axis_slide(['y'], [-1])
+
+                if key == self.wnd.keys.NUMBER_6:
+                    self.cam.axis_slide(['y'], [1])
+
 
                 if key == self.wnd.keys.T:
                     self.op['theme'] = next(self.o['theme']) 
