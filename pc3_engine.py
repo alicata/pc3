@@ -101,11 +101,16 @@ class Camera:
     
     def orbit(self, t):
         """Make camera orbit around a path."""
-        angle = self.op['scale'] * t*np.pi/2 
+        angle = self.op['scale'] * (t)*np.pi/2 
         r = 230 #t #self.win[0]/8 #max(self.win[0], self.win[1]) / 2
         pos = np.array([np.cos(angle)*r,  28 , np.sin(angle)*r])
         self.cam_target = vec3(128, 128, -128) 
         self.cam_pos = pos + self.cam_target
+
+    def view(self, viewpoint):
+        if viewpoint == "front_top":
+            self.cam_target = vec3(128, 128, -128) 
+            self.cam_pos = vec3(128, 356, -128)
 
     def disparity_shift(self, t):
         if self.op['layer'] in  ["free"]:

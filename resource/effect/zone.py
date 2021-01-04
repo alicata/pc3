@@ -8,13 +8,16 @@ import moderngl
 import moderngl_window as mglw
 from moderngl_window import geometry
 
+from geometry.mesh import *
+
 
 class ProgramAssembler:
-    def __init__(self, ctx, loader, fileapth, theme="mody"):
+    def __init__(self, ctx, loader, filepath, theme="mody"):
         self.ctx = ctx
         self.load_program(loader, theme)
         self.set_program_inputs()
-        self.create_vertex_data(fileapth)
+        self.filepath = filepath
+        self.create_vertex_data(filepath)
 
     def load_program(self, loader, theme):
         self.loader = loader
@@ -154,6 +157,9 @@ class Effect:
             [0,255,0,1]])
         self.vao_wrapper = self.program_assembley.vao
         self.init_dynamic_data()
+        filepath = self.program_assembley.filepath
+        self.mesh = MeshLoader().load(filepath)
+        self.collider = MeshCollider(self.mesh)
 
     def init_dynamic_data(self):
         assembley = self.program_assembley
@@ -187,7 +193,7 @@ class Effect:
         self.program_assembley.light.value = (1.0, 1.0, 1.0)
         ctx = self.program_assembley.ctx
 
-        points = np.array([np.array([0, 0, 0])]) 
+        points = self.collider.check(data) # np.array([np.array([0, 0, 0])]) 
         if points is not None:
             if max_count is None:
                 max_count = len(points[0])
