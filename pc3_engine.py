@@ -231,8 +231,8 @@ class PC3(Window):
         add_effect(self.e, resource.effect.pointcloud, 'dark_to_bright', self.num_samples)
 
         # build default collider zone
-        default_zone_filepath = os.path.join(os.environ.get('P3_HOME', ''), 'data/zone.obj')
-        add_zone(self.e, resource.effect.zone, default_zone_filepath)
+        #default_zone_filepath = os.path.join(os.environ.get('P3_HOME', ''), 'data/zone.obj')
+        #add_zone(self.e, resource.effect.zone, default_zone_filepath)
 
         for mesh_file in mesh_files:
             add_zone(self.e, resource.effect.zone, mesh_file)
