@@ -15,6 +15,7 @@ import resource.effect.pointcloud
 import resource.effect.zone 
 import transform.frame as tf
 from utils.m import *
+from utils import path
 
 
 class Dataset:
@@ -108,6 +109,7 @@ class Camera:
         self.cam_pos = pos + self.cam_target
 
     def view(self, viewpoint):
+        print(viewpoint)
         if viewpoint == "front_top":
             self.cam_target = vec3(128, 128, -128) 
             self.cam_pos = vec3(128, 356, -128)
@@ -231,8 +233,8 @@ class PC3(Window):
         add_effect(self.e, resource.effect.pointcloud, 'dark_to_bright', self.num_samples)
 
         # build default collider zone
-        #default_zone_filepath = os.path.join(os.environ.get('P3_HOME', ''), 'data/zone.obj')
-        #add_zone(self.e, resource.effect.zone, default_zone_filepath)
+        default_zone_filepath = path.from_cache('zone.obj')
+        add_zone(self.e, resource.effect.zone, default_zone_filepath)
 
         for mesh_file in mesh_files:
             add_zone(self.e, resource.effect.zone, mesh_file)

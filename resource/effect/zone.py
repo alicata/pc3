@@ -9,11 +9,13 @@ import moderngl_window as mglw
 from moderngl_window import geometry
 
 from geometry.mesh import *
+from utils.path import *
 
 
 class ProgramAssembler:
     def __init__(self, ctx, loader, filepath, theme="mody"):
         self.ctx = ctx
+        self.mesh = None
         self.load_program(loader, theme)
         self.set_program_inputs()
         self.filepath = filepath
@@ -39,8 +41,16 @@ class ProgramAssembler:
         """Harcoded unit cube (x = [-0.5, +0.5]))
            it will be stretched to +/ 64 by vertex shader.
         """
-        self.scene = self.loader.load_scene(filepath)
-        self.vao = self.scene.root_nodes[0].mesh.vao
+        scene_gpu = self.loader.load_scene(filepath)
+        self.vao = scene_gpu.root_nodes[0].mesh.vao
+
+        mesh = MeshLoader().load(filepath)[0]
+        self.mesh=mesh
+        # TODO: for now get the vao from the loaded scene in stead of creating from cpu mesh
+        # vao = create_vao_from_context_and_array(self.ctx, self.prog, mesh.verts, mesh.normals)
+
+        # store the cpu mesh in the vao intended for gpu rendering
+        self.vao.mesh = mesh
 
     def load_vertex_shader(self):
         vertex_shader='''
@@ -48,7 +58,7 @@ class ProgramAssembler:
 
             uniform mat4 Mvp;
 
-            in vec3 in_move;
+            vec3 in_move = vec3(0.0, 0.0, 0.0);
 
             in vec3 in_position;
             in vec3 in_normal;
