@@ -36,6 +36,14 @@ pc3 /data/*.png`
 - [ ] probe: interactive data sharing with clipboard ('clip://topic')
 - [ ] probe: interactive data sharing with screenshot, mouse ('screen://topic')
 - [ ] gui: imgui options and menus for parametrization
+- [ ] visualization: light probe
+- [ ] visualization: reflection probe
+- [ ] visualization: depth probe
+- [ ] visualization: occlusion detection
+- [ ] automaton: event trigger
+
+
+
 
 
 

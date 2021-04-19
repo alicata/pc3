@@ -43,7 +43,7 @@ class ProgramAssembler:
         """
         scene_gpu = self.loader.load_scene(filepath)
         self.vao = scene_gpu.root_nodes[0].mesh.vao
-
+        filepath = from_cache(filepath)
         mesh = MeshLoader().load(filepath)[0]
         self.mesh=mesh
         # TODO: for now get the vao from the loaded scene in stead of creating from cpu mesh

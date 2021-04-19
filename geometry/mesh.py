@@ -125,9 +125,6 @@ class MeshCollider:
         m = self.mesh
         return False
             
-
-            
-
     def check(self, points):
         """
         TODO
