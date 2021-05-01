@@ -23,7 +23,29 @@ pc3 /data/*.png`
 | utility      | description  | 
 | ------------ | ------------ |
 | pc3     | induce depth perception from 3-array data |
-| pc3 map | mapping of spaces to meters, etc.. |
+| p3      | entry point for tool (normals, viewer, etc..) |
+| p3  map | mapping of spaces to meters, etc.. |
+
+# Architecture
+
+## Obs Volume
+System to load and observe arbitrary mesh representations into the pipeline as Effect objects
+
+![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
+## Obs sub-systems
+* mesh loading
+* resource effects: rendering programs as resources
+* effects selection
+*  xray layer
+* zoning
+
+- [ ] frame transformation: from loaded object space to world space (256x256x256)
+- [ ] xray blending as layer shared across effects and graph nodes
+- [x] theme: add 'dark-to-bright' dark gray-to-white color mapping theme
+
+![DpjfckaXcAAr5KN](https://user-images.githubusercontent.com/10095423/103162114-adbb3a00-47a0-11eb-968e-89832b85fce8.jpg)
+
+
 
 ![perc3ption](/docs/archi.png)
 
