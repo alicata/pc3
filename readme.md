@@ -1,7 +1,7 @@
-# pc3
-Perception tools to reveal the depth structure in 3-arrays. 
+![perc3ption](/docs/perc_vision.png)
 
-![perc3ption](/docs/archi.png)
+
+Perception tools to reveal the depth structure in 3-arrays. 
 
 # Observer, Motion Control, Probes.  
 During array visualization the observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file producer is anaware of being observed. 
@@ -25,9 +25,12 @@ pc3 /data/*.png`
 | pc3     | induce depth perception from 3-array data |
 | pc3 map | mapping of spaces to meters, etc.. |
 
+![perc3ption](/docs/archi.png)
+
 ## Roadamp
-- [ ] probe: inter-process data sharing with uri 'mem://topic'
 - [ ] visualization: loading mesh as observation volume
+- [ ] tool: space renderer (cpu)
+- [ ] probe: inter-process data sharing with uri 'mem://topic'
 - [ ] transformer: basis alignment between reference and time-lapsed frames
 - [ ] visualization: volume filling by penetration
 - [ ] transformer: volume shaping by screen pixel picking
@@ -41,6 +44,14 @@ pc3 /data/*.png`
 - [ ] visualization: depth probe
 - [ ] visualization: occlusion detection
 - [ ] automaton: event trigger
+- [ ] engine: graph architecture and graph editing
+- [ ] visualization: x-ray vision
+- [ ] tool: remote source polling
+- [ ] visualization: theme library
+- [ ] engine: configuration, asset, and state management
+- [ ] engine: visual pattern recogntion trigges
+- [ ] engine: layers and scriptable objects
+- [ ] visualization: projection tooling (panini, 1, 2, 3 vanishing points)
 
 
 
