@@ -26,6 +26,7 @@ pc3 /data/*.png`
 | p3      | entry point for tool (normals, viewer, etc..) |
 | p3  map | mapping of spaces to meters, etc.. |
 
+
 # Architecture
 
 ## Obs Volume
@@ -43,7 +44,6 @@ System to load and observe arbitrary mesh representations into the pipeline as E
 - [ ] xray blending as layer shared across effects and graph nodes
 - [x] theme: add 'dark-to-bright' dark gray-to-white color mapping theme
 
-![DpjfckaXcAAr5KN](https://user-images.githubusercontent.com/10095423/103162114-adbb3a00-47a0-11eb-968e-89832b85fce8.jpg)
 
 # Diversified-Integrity: Frustrum, Space, CFs, Graph Tools
 Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
@@ -54,6 +54,7 @@ Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 - [ ] data source polling
 - [ ] config editor
 - [ ] graph editor
+
 
 # Engine Graph 
 
@@ -68,6 +69,7 @@ Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 - [ ] CFs facilitation
 
 ![perc3ption](/docs/archi.png)
+
 
 ## Roadamp
 - [ ] visualization: loading mesh as observation volume
