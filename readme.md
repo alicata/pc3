@@ -45,7 +45,22 @@ System to load and observe arbitrary mesh representations into the pipeline as E
 
 ![DpjfckaXcAAr5KN](https://user-images.githubusercontent.com/10095423/103162114-adbb3a00-47a0-11eb-968e-89832b85fce8.jpg)
 
+# Diversified-Integrity: Frustrum, Space, CFs, Graph Tools
+Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 
+![perspective_vision - Copy](https://user-images.githubusercontent.com/10095423/103176130-f831ca80-4823-11eb-8128-40dc3bf0a59e.jpg)
+
+- [ ] cpu rendering
+- [ ] perspective generator
+- [ ] cf: coordinate frame selector
+- [ ] data source polling
+- [ ] config editor
+- [ ] graph editor
+
+![graph_editor](https://user-images.githubusercontent.com/10095423/103176012-57dba600-4823-11eb-8f81-1e65bc761c29.gif)
+
+## Coordinate Frames
+- [ ] CFs facilitation
 
 ![perc3ption](/docs/archi.png)
 
