@@ -48,8 +48,6 @@ System to load and observe arbitrary mesh representations into the pipeline as E
 # Diversified-Integrity: Frustrum, Space, CFs, Graph Tools
 Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 
-![perspective_vision - Copy](https://user-images.githubusercontent.com/10095423/103176130-f831ca80-4823-11eb-8128-40dc3bf0a59e.jpg)
-
 - [ ] cpu rendering
 - [ ] perspective generator
 - [ ] cf: coordinate frame selector
@@ -57,7 +55,14 @@ Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 - [ ] config editor
 - [ ] graph editor
 
-![graph_editor](https://user-images.githubusercontent.com/10095423/103176012-57dba600-4823-11eb-8f81-1e65bc761c29.gif)
+# Engine Graph 
+
+![engine_graph2](https://user-images.githubusercontent.com/10095423/103165031-8c217900-47c7-11eb-8c2f-4d4f42ed0431.jpg)
+
+- [ ] graph pipeline composition
+- [ ] graph visualization (pyflow)
+- [ ] config and state machine management
+
 
 ## Coordinate Frames
 - [ ] CFs facilitation
