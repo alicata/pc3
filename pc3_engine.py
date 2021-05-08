@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import pathlib
 import cv2
 import os
 import itertools as it
@@ -199,10 +200,43 @@ class PC3(Window):
 
         def get_mesh_files():
             meshpattern = os.environ.get('P3_MESHPATH', False)
+            mask_pattern = os.environ.get('P3_MASKPATTERN', "*")
             meshfiles = []
             if meshpattern:
                 meshfiles = glob.glob(meshpattern)
-            return meshfiles
+
+            def pass_mask(f, mask_pattern):
+                if mask_pattern == '' or mask_pattern == '*':
+                    return True
+                return len(f.split(mask_pattern)) == 1
+
+            def pass_single_dot(f):
+                return len(f.split('.')) <= 2
+
+            # remove files that mgl cannot handle
+            flatfiles = list()
+            print('\n\n\n')
+            print("....................... MESH FILE ..................................")
+            for f in meshfiles:
+                if pass_single_dot(f) and pass_mask(f, mask_pattern):
+                    parent = os.getcwd() 
+
+                    # mgl cannot handle local file from other launch folder, need absolute path 
+                    if os.path.isabs(f) is False:
+                        f = os.path.join(parent, f)
+
+                    # mgl cannot handle window abs path, turn into posix
+                    mesh_file = pathlib.PurePath(f).as_posix()
+
+                    # mgl cannot handle drive letter C:/path/
+                    mesh_file = mesh_file.split(":")[-1]
+
+                    print(" ********* {0} *********".format(mesh_file))
+                    flatfiles.append(mesh_file)
+            print("...................................................................")
+            print('\n\n\n')
+
+            return flatfiles
 
         mesh_files = get_mesh_files()
 
@@ -237,7 +271,13 @@ class PC3(Window):
         add_zone(self.e, resource.effect.zone, default_zone_filepath)
 
         for mesh_file in mesh_files:
-            add_zone(self.e, resource.effect.zone, mesh_file)
+            try:
+                add_zone(self.e, resource.effect.zone, mesh_file)
+            except Exception as e:
+                print("\n\n*****************************************")
+                print("  --- ERROR --- could not create Zone Effect with meshfile {0}".format(mesh_file))
+                print(str(e))
+                print("************ -- END OF ERROR --- ********\n\n")
 
     def set_blending(self):
         #self.ctx.blend_func = moderngl.ADDITIVE_BLENDING
