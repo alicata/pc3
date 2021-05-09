@@ -139,6 +139,9 @@ class FragmentProgram:
             void main() {
                 float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0);
                 f_color = vec4(g, g, g, 1.0);
+                //vec4 bkg = vec4(gl_FragCoord.y/1000, gl_FragCoord.x/5000, 1.0-gl_FragCoord.y/1000, 0.3);
+                // how to override gl_FragColor to create shaded background?
+                //gl_FragColor = vec4(1,0,0,1);
             }
         '''
 

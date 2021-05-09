@@ -11,6 +11,7 @@ IF %CMD%==cycle goto CYCLE
 IF %CMD%==layer goto LAYER 
 IF %CMD%==cam goto CAM
 
+IF %CMD%==merge goto MAKE_MERGE
 IF %CMD%==mask goto MAKE_MASK
 IF %CMD%==normal goto MAKE_NORMAL
 IF %CMD%==d2p goto DEPTH_TO_POINTS
@@ -38,10 +39,17 @@ echo depth & video
 echo ---------------------------------------------------------------------------
 echo "p3 layer <png>       : draw/animate an image that is being continously overwritten"
 echo "p3 mask <obj>   : make mask file from source object file
+echo "p3 merge obj1 obj2 out: merge two obj mesh files into one output file
 echo "p3 normal <obj> : make mask file from source object file
 echo "p3 unpack-video <mp4>: extract frames from mp4 video
 echo ---------------------------------------------------------------------------
 
+goto END
+
+
+
+:MAKE_MERGE
+python "%PC3_ROOT%/tools/src/merge_meshes.py" %2 %3 %4
 goto END
 
 

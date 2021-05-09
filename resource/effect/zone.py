@@ -136,7 +136,8 @@ class ProgramAssembler:
 
             void main() {
                 float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.7 + 0.3;
-                f_color = vec4(0.0, 1.0, 0.0, 0.5);
+                float b = 0.0; //mod(v_vert.z - fract(v_vert.z), 2)/2;
+                f_color = vec4(0.0, 1.0, b, 0.5);
             }
         '''
         fragment_shader = {
