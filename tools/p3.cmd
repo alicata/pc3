@@ -31,7 +31,7 @@ echo -                              p3                                         -
 echo -                              p3                                         -
 echo ---------------------------------------------------------------------------
 echo "p3 capture                : capture snapshot of renderer frame"
-echo "p3 view <*.png>           : render depth frame"
+echo "p3 view png mesh meshmask : render depth frame, with meshes and exclude mask pattern"
 echo "p3 cam <obj>              : live camera depth with mesh, i.e p3 cam file.obj"
 echo "p3 cycle <glob> <filepath>: cycle image(s) from source, i.e. p3 cycle *.png test.png"
 echo ---------------------------------------------------------------------------
@@ -92,7 +92,11 @@ echo P3_MESHFILES : %P3_MESHFILE%
 goto END
 
 :VIEW
-pc3 %2 %3
+rem pc3 %2 %3 
+set PC3_FILEPATH=%2
+set P3_MESHPATH=%3
+set P3_MASKPATTERN=%4
+python %PC3_ROOT%/tools/pc3_app.py --samples 0 -vs yes
 goto END
 
 :LAYER

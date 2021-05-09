@@ -246,7 +246,12 @@ class PC3(Window):
             exit(0)
         self.filepath = it.cycle(glob.glob(pattern))
         ds = Dataset()
-        self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
+        try:
+            self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
+        except:
+            self.points = np.array([np.array([0,0,0])]).astype(np.float64) 
+            self.num_samples = 1
+            self.dim = (256, 256, 1) 
 
         def add_effect(e, effect, effect_name, num_samples):
             theme = {'mody' : 'mody', 'firepit' : 'firepit', 'zone':'illuminated',
