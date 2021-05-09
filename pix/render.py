@@ -27,7 +27,7 @@ def points(ima, pts, color=[255, 255, 255], th=2):
     for p in pts:
         center = tuple((int(p[0]), int(p[1])))
         if len(p) == 3:
-            color = int(p[2])
+            c = int(p[2])
+            color = [c, c, c]
             # issue#1: force white for now, depth range is invalid
-            color = 255
         cv2.circle(ima, center, th, color, -1)
