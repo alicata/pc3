@@ -184,6 +184,7 @@ class PC3(Window):
             'collider' : 'off',
             'collider_selection' : 0, # all zone selected
             "xray" : "off",
+            "clear_color" : [.008, 0.09, 0.16],
             "-":"",
             }
         }
@@ -318,8 +319,8 @@ class PC3(Window):
                 pass
  
     def render(self, t, frame_time):
-        self.ctx.clear(.008, .006, 0.16)
-
+        c0, c1, c2 = self.op['clear_color']
+        self.ctx.clear(c0, c1, c2)
 
         self.update_frame_data()
         mvp = self.cam.update_pose(t)

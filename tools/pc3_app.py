@@ -9,6 +9,7 @@ class Viewer(PC3):
         self.o = dict()
         self.o['proj']  = it.cycle(['perp', 'ortho']) 
         self.o['theme'] = it.cycle(['mody', 'firepit', 'dark_to_bright', 'zone'])
+        self.o['clear_color']  = it.cycle([[0.008, 0.08, 0.16], [0.5, 0.6, 1.0]]) 
         self.o['collider'] = it.cycle(['off', 'zone', 'fill'])
         self.o['xray'] = it.cycle(['off', 'seethru', 'translucent'])
         self.o['layer']  = it.cycle(['free', 'orbit']) 
@@ -90,6 +91,9 @@ class Viewer(PC3):
 
                 if key == self.wnd.keys.T:
                     self.op['theme'] = next(self.o['theme']) 
+
+                if key == self.wnd.keys.B:
+                    self.op['clear_color'] = next(self.o['clear_color']) 
 
                 if key == self.wnd.keys.C:
                     self.op['collider'] = next(self.o['collider']) 

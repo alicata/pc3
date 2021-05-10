@@ -83,7 +83,7 @@ def edit(n, outpath):
     pixel_points= pixel_points[pixel_points[:,1]>=0] 
     
     pixel_points = pixel_points.astype(np.uint)
-    pix.render.points(frame_buffer, pixel_points, th=4)   
+    pix.render.points(frame_buffer, pixel_points, th=6)   
 
     """ First and nearest grid corner at 1 unit from origin """
     ix = n//2 -1
@@ -97,7 +97,7 @@ def edit(n, outpath):
     color = [255, 255, 255]
     l = [x0, xm, x1]
     for x in l:
-        pix.render.points(frame_buffer, [np.array([x, y0])], color, th=4)
+        pix.render.points(frame_buffer, [np.array([x, y0])], color, th=8)
 
     params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
     cv2.imwrite(outpath, frame_buffer, params)
