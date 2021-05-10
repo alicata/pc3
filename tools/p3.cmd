@@ -109,7 +109,7 @@ python %PC3_ROOT%/tools/pc3_app.py --samples 0 -vs yes
 goto END
 
 :SPACE
-python %PC3_ROOT%/tools/space_editor.py
+python %PC3_ROOT%/tools/space_editor.py %2  %3 %4 %5  %6 %7 %8
 goto END
 
 :LAYER

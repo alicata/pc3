@@ -4,6 +4,7 @@ import sys
 import transform.projection
 import pix.render
 import geometry.mesh
+import transform.affine 
 
 """
 world space     :  global coord system independent of observer
@@ -38,13 +39,16 @@ def make_grid(n, z_in_front_negative=True):
 
     return grid
 
-def edit(n, outpath):
+def transform_space(n, outpath, tvector, rvector):
     grid =  make_grid(n, z_in_front_negative=True)
     screen_size = [640, 480]
     W, H = screen_size
     
     """ assume max distance 10m, and focal length 0.01m """
     max_dist = 10  
+
+    """ World to camera - rotate & translate camera in the world """
+    grid = transform.affine.apply_pose_vecs(grid, rvector, tvector)
 
     [print(p) for p in grid]
     min_x, max_x = np.min(grid[:,0]), np.max(grid[:,0])
@@ -89,21 +93,22 @@ def edit(n, outpath):
     ix = n//2 -1
     """ Hack ix to N as first central corners ix changed after clipping """
     ix = n 
-    x0 = int(pixel_points[ix+0, 0] + 1)
-    x1 = int(pixel_points[ix+1, 0] - 1)
-    xm = int((x0 + x1) / 2)
-    y0 = pixel_points[n//2+0, 1]
-    """ Three points between central block corners. """
-    color = [255, 255, 255]
-    l = [x0, xm, x1]
-    for x in l:
-        pix.render.points(frame_buffer, [np.array([x, y0])], color, th=8)
+
+    """ Render to buffer only if some points survived the screen clipping """
+    if len(pixel_points) > 0:
+        x0 = int(pixel_points[ix+0, 0] + 1)
+        x1 = int(pixel_points[ix+1, 0] - 1)
+        xm = int((x0 + x1) / 2)
+        y0 = pixel_points[n//2+0, 1]
+        """ Three points between central block corners. """
+        color = [255, 255, 255]
+        l = [x0, xm, x1]
+        for x in l:
+            pix.render.points(frame_buffer, [np.array([x, y0])], color, th=8)
 
     params = [cv2.IMWRITE_PNG_COMPRESSION, 0]
     cv2.imwrite(outpath, frame_buffer, params)
 
-    cv2.imshow('projection - world-cameara -> clip -> ndc -> screen space', frame_buffer)
-    cv2.waitKey(1)
     print("------------- {0}x{0} blocks volume ------------".format(n))
     print("grid corners on floor projected to screen space")
     print("grid blocks start at 1m distance from camera")
@@ -130,14 +135,64 @@ def edit(n, outpath):
     print("grid x     : {0}m to {1}m ".format(min_x, max_x))
     print("grid z     : {0}m to {1}m ".format(min_z, max_z))
     print("grid height: {0}m to {1}m ".format(min_y, max_y))
+    print("----------------------------------------------")
+    print("rvector: ", rvector)
+    print("tvector: ", tvector)
     print('')
     print("output save to {0} ...".format(outpath))
     print("done.")
+    return frame_buffer
+
+def edit(n, outpath, tvect, rvect):
+    while True: 
+        frame_buffer = transform_space(n, outpath, tvect, rvect)
+
+        tx, ty, tz = tvect
+        rx, ry, rz = rvect
+
+        cv2.imshow('projection - world-cameara -> clip -> ndc -> screen space', frame_buffer)
+        key = cv2.waitKey(0)
+        if key == ord('a'):
+            tx -= 0.1
+        if key == ord('d'):
+            tx += 0.1
+        if key == ord('w'):
+            tz -= 0.1
+        if key == ord('s'):
+            tz += 0.1
+        if key == ord('q'):
+            ty -= 0.1
+        if key == ord('e'):
+            ty += 0.1
+
+        if key == ord('o'):
+            ry -= 1.0
+        if key == ord('p'):
+            ry += 1.0
+
+        if key == ord('1'):
+            exit(0)
+
+        tvect = np.array([tx, ty, tz])
+        rvect = np.array([rx, ry, rz])
 
     
 if __name__=="__main__":
     try:
+        tvector = np.array([0.0, 0.0, 0.0])
+        rvector = np.array([0.0, 0.0, 0.0])
+
         outpath = sys.argv[1]
+        try:
+            t = [float(v) for v in sys.argv[2:5]]
+            r = [float(v) for v in sys.argv[5:8]]
+            tvector = np.array(t)
+            rvector = np.array(r) 
+        except:
+            pass 
     except:
         outpath = 'output_space_as_depth_image.png'
-    edit(5, outpath)
+
+    print("tvector: ", tvector)
+    print("rvector: ", rvector)
+    edit(5, outpath, tvector, rvector)
