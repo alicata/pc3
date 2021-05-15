@@ -95,9 +95,10 @@ echo
 goto END
 
 :CTX
+git config user.email
 echo PC3_ROOT     : %PC3_ROOT%
 echo P3_WORKSPACE : %P3_WS%
-echo P3_MESHFILES : %P3_MESHFILE%
+echo P3_MESHFILE  : %P3_MESHFILE%
 goto END
 
 :VIEW

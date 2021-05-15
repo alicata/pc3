@@ -42,6 +42,8 @@ class Viewer(PC3):
                     self.cam.op['fps'] = next(self.o['fps'])
 
             else:
+                # reset decaying speed
+
                 if key == self.wnd.keys.S:
                     self.cam.axis_slide(['z'], [1])
 
@@ -53,7 +55,6 @@ class Viewer(PC3):
 
                 if key == self.wnd.keys.NUMBER_5:
                     self.cam.axis_slide(['z'], [-1])
-
 
                 if key == self.wnd.keys.A:
                     self.cam.axis_trans(['x'], [-1])

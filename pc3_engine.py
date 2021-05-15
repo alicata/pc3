@@ -92,6 +92,7 @@ class Camera:
         self.cam_target = vec3(128, 128, -128) 
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
+        self.speed = 1.0
         self.step_with_target = False 
 
         self.op = {}
@@ -100,6 +101,10 @@ class Camera:
         self.op['modulation'] = 'none'
         self.op['scale']= 0.25 
         self.op['fps'] = 30
+        self.velocity = {
+            'boost' : 3.4,
+            'decay' : 0.21
+        }
     
     def orbit(self, t):
         """Make camera orbit around a path."""
@@ -131,12 +136,18 @@ class Camera:
     def step(self, t):
         """Step through motion trajectory."""
         if self.op['layer'] == "free":
-            speed = 1 #self.op['scale']
+            #self.speed = 2 #self.op['scale']
             for dim in range(3):
+                # distance in one axis
                 step = float(self.stepper[dim])
-                self.cam_pos[dim] += (speed*step)
+                dist = self.speed*step
+
+                self.cam_pos[dim] += (dist)
                 if self.step_with_target:
-                    self.cam_target[dim] += (speed*step)
+                    self.cam_target[dim] += (dist)
+
+            # slow down at a given decay
+            self.speed = max(self.speed - self.velocity['decay'], 0) 
             #self.cam_pos = self.cam_o
         elif self.op['layer'] == "orbit":
             self.orbit(t) 
@@ -145,9 +156,14 @@ class Camera:
 
     def axis_slide(self, axis, deltas):
         """Slide along one or more axis."""
+
+        # boost speed at command, as it is going to decay
+        self.speed += self.velocity['boost'] 
+
         ax = {'z' : 2, 'y' : 1, 'x' : 0}
+        self.stepper = [0,0,0]
         for a, d in zip(axis, deltas):
-            self.stepper[ax[a]] = d
+            self.stepper[ax[a]] = float(d)
         self.step_with_target = False 
 
     def axis_trans(self, axis, deltas):
