@@ -93,6 +93,10 @@ class Camera:
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
         self.speed = 1.0
+        self.shift = {
+            'vec' : np.array([0, 0, 0]),
+            'scaler': np.array([0.03, 0.01, 0.01])
+        }
         self.step_with_target = False 
 
         self.op = {}
@@ -122,16 +126,17 @@ class Camera:
 
     def disparity_shift(self, t):
         if self.op['layer'] in  ["free"]:
-            shift = float(int(t*20) % 8)
-            val = np.array([0, 1, 2, 1, 0, -1, -2, -1])
-            shift = val[int(shift)] * 0.5
-            self.cam_pos[0] += shift 
-            self.cam_target[0] += shift
+            sx = (50 - np.random.randint(0, 100)) * self.shift['scaler'][0] 
+            sy = (50 - np.random.randint(0, 100)) * self.shift['scaler'][1]
+            sz = (50 - np.random.randint(0, 100)) * self.shift['scaler'][2] 
+            self.shift['vec'] = np.array([sx, sy, sz])
         elif self.op['layer'] in ["orbit"]:
             shift = float(int(t*100) % 3 - 1)
             shift *= 1
             self.cam_pos[1] += shift
             self.cam_target[1] += shift/2
+        else:
+            self.shift['vec']= np.array([0,0,0])
 
     def step(self, t):
         """Step through motion trajectory."""
@@ -174,7 +179,7 @@ class Camera:
     def update_pose(self, t):
         self.step(t)
 
-        self.lookat = Matrix44.look_at(self.cam_pos, self.cam_target, self.cam_up)
+        self.lookat = Matrix44.look_at(self.cam_pos+self.shift['vec'], self.cam_target, self.cam_up)
         if self.op['proj'] == 'perp':
             self.proj = Matrix44.perspective_projection(self.fov, self.aspect_ratio, 0.1, 5000.0)
         else: 
