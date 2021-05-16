@@ -48,16 +48,20 @@ class FragmentProgram:
             out vec4 f_color;
 
             void main() {
-                float dist = length((v_vert - 0))/255.0;
                 float lum = clamp(dot(normalize(Light - v_vert), normalize(v_norm)), 0.0, 1.0) * 0.3 + 0.7;
 
-                //float proximity = 1.0 - length(v_vert) / 255.0;
-                lum = 1.0;
+                float dz = 20.0;
+                float mz = (int(abs(v_vert.z))%int(dz))/dz;
+
+                //lum = 1.0;
+                vec3 v = vec3(v_vert.z, v_vert.z, v_vert.z);
+                float z = length(v);
 
                 // front red back blue
-                float b = clamp(dist * 1.3, 0.0, 1.0);
-                float r = 1.0 - b;
-                f_color = vec4(lum*r, 0.1, lum*b, 1.0);
+                float b = clamp(mz * 0.9999, 0.0, 1.0);
+                float r = 1.0;
+                float g = b*1;
+                f_color = vec4(lum*r, lum*g, lum*b, 1.0);
 
             }
         '''
