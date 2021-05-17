@@ -121,11 +121,66 @@ class MeshCollider:
     def __init__(self, mesh):
         self.mesh = mesh
 
-    def check_point(self, p):
+    def check_point(self, p, max_faces=12):
+        """check cpu collision between point and mesh in host memory
+        input:
+            p : a point as (1,3) numpy array of float 64
+        output:
+            boolean True if point inside mesh, False otherwise
+        """
+
+        """ assume mesh has faces, normals, and not a facesless triangle strip. """
         m = self.mesh
-        return False
+
+        def clip(v, a, b):
+            if v < a: v = a
+            if v > b: v = b
+            return v
+
+        inside = 1
+        """TODO : plane / point distance: outside -, inside +
+           ax + bx + cz + d = 0
+           N dot P + d = 0
+           N = (a,b,c)
+           P = (x,y,z)
+            
+           1) check that mesh verts and points in same coordinate system
+        """
+
+        #disabled
+        if inside:
+            return
+
+        for i, f in enumerate(self.mesh.faces[max_faces-1]):
+            n = self.mesh.normals[i, :]
+            faces = self.mesh.faces[i]
+            v0, v1, v2 = self.mesh.verts[faces]
+            #p_in = (v0+v1+v2)*0.3333
+            #p_out = v0 * 100 - 100
+            u0 = v1 - v0
+            u1 = v2 - v0
+            #n = np.cross(u0, u1)
+            #n = n / np.norm(n)
+            d = -np.dot(n, v0)
+            #side0 = np.dot(n, p_in) + d
+            #side1 = np.dot(n, p_out) + d
+            side = np.dot(n, p) + d
+            #print(side)
+            if side < 0:
+                inside = 0
+                break
+
+        return inside==1 
             
     def check(self, points):
+        """check cpu collision
+           input:
+               points : np array is float64 dim [1, N, 3]
+           output:
+               a point np array np.int32 and size [N, 3]
+
+               hack for now size to [1, 3]
+        """
         """
         TODO
         ======
@@ -138,12 +193,20 @@ class MeshCollider:
         4) or explore particle system
 
         """
-        points = np.array([np.array([0,0,0])])
-        """
-        x = np.array([1,2,3,4.0])
-        y = np.array([2,3,4,5.0])
-        z = np.array([3,4,5,6.0])
-        #points = np.dstack([x,y,z]).astype(np.float64)
-        """
-        return points
 
+        """
+        points =  np.random.randint(0, 25, (1, 2*256, 3)).astype(np.float64)*10
+        points[:,:,2] = -points[:,:,2]
+        points[:,:,1] = points[:,:,1]*0.07 + 128 
+        """
+
+        collisions = list() 
+
+        for p in points:
+            if self.check_point(p):
+                collisions.append(p)
+        if len(collisions):
+            co = np.array(collisions)
+        else:
+            co = None
+        return co 

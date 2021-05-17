@@ -169,8 +169,9 @@ class Effect:
         self.vao_wrapper = self.program_assembley.vao
         self.init_dynamic_data()
         filepath = self.program_assembley.filepath
-        self.mesh = MeshLoader().load(filepath)
-        self.collider = MeshCollider(self.mesh)
+        # cpu mesh was previously loaded by gpu-program-assembler to create va in gpu
+        mesh = self.program_assembley.mesh
+        self.collider = MeshCollider(mesh)
 
     def init_dynamic_data(self):
         assembley = self.program_assembley
@@ -204,7 +205,8 @@ class Effect:
         self.program_assembley.light.value = (1.0, 1.0, 1.0)
         ctx = self.program_assembley.ctx
 
-        points = self.collider.check(data) # np.array([np.array([0, 0, 0])]) 
+        #points = self.collider.check(data) # np.array([np.array([0, 0, 0])]) 
+        points = np.array([np.array([0, 0, 0])]) 
         if points is not None:
             if max_count is None:
                 max_count = len(points[0])

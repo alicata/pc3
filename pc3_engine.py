@@ -283,6 +283,7 @@ class PC3(Window):
             e[effect_name].init()
 
         def add_zone(e, effect, mesh_path):
+            """add zone effect zone.Effect and built it from mesh_path """
             effect_name = 'zone'
             progasm = effect.ProgramAssembler(self.ctx, self, mesh_path, 'illuminated')
             e[effect_name].append(effect.Effect(progasm, 1))
@@ -353,9 +354,16 @@ class PC3(Window):
             self.ctx.enable(moderngl.DEPTH_TEST | moderngl.BLEND)
             self.ctx.blend_equation = moderngl.MAX
 
+        # collision detection (theme=zone) 
         if self.op['theme'] == 'zone':
-            for zone in self.e['zone']:
-                zone.render(mvp, self.points)
+            for n, zone in enumerate(self.e['zone']):
+                sel = self.op['collider_selection']
+                # select all or active zone id
+                if  sel == 0 or sel == (n + 1): 
+                    zone.render(mvp, self.points)
+                    points = zone.collider.check(self.points[0,:,:])
+                    # mody, dark_to_bright, firepit
+                    self.e['firepit'].render(mvp, points)
         else:
             self.e[self.op['theme']].render(mvp, self.points)
 
