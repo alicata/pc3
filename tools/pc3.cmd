@@ -1,4 +1,4 @@
-call conda activate m3
+call conda activate o3
 set PC3_FILEPATH=%1
 set P3_MESHPATH=%2
 set P3_MASKPATTERN=%3
