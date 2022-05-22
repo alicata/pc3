@@ -1,10 +1,10 @@
 ![perc3ption](/docs/perc_vision.png)
 
 
-Perception tools to reveal the depth structure in 3-arrays. 
+Perception tool to reveal the depth structure in streams generated from 2d and 3d sensors. 
 
 # Observer, Motion Control, Probes.  
-During array visualization the observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file producer is anaware of being observed. 
+The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
 
 ## Features
 * fluid depth structure visualiation
@@ -15,19 +15,20 @@ During array visualization the observer can guide the camera view through a comp
 
 ## Usage:
 ```
-pc3 /data/*.png`
+pc3 /hardware/datastream/*.png`
 ```
 [read more](./docs/readme_pc3_gpu.md)
 
-## Perception-Enhencing Utilities
+## Perception-Enhancing Utilities
 | utility      | description  | 
 | ------------ | ------------ |
-| pc3     | induce depth perception from 3-array data |
-| p3      | entry point for tool (normals, viewer, etc..) |
-| p3  map | mapping of spaces to meters, etc.. |
+| pc3              | induce depth perception from 3-array data |
+| pc3_utils        | various depth and mesh processing utilities (normals, viewer, etc..) |
+| pc3_space_editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
+pc3 adopts a stream based processing architecture, where streams are continously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine contisouly process the stream, and coordinates interaction with the user interface. 
 
 ## Obs Volume
 System to load and observe arbitrary mesh representations into the pipeline as Effect objects
@@ -67,8 +68,6 @@ Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 
 ## Coordinate Frames
 - [ ] CFs facilitation
-
-![perc3ption](/docs/archi.png)
 
 
 ## Roadamp
