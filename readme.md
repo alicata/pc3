@@ -68,7 +68,7 @@ In-Progress:
 
 ## Roadamp
 Very rich roadmap with lots of features.
-![roadmap](/docs/roadmap.md)
+[roadmap](/docs/roadmap.md)
 
 
 
