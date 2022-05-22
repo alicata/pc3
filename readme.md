@@ -42,19 +42,20 @@ install.sh
 pc3 <stream source uri>
 ```
 
-|      | description  | 
+|  mode    | example | 
 | ------------ | ------------ |
-| stream           |  |
-| batch      | tool with|
+| file stream     | pc3 depth_file_stream.png |
+| socket stream   | pc3 localhost|
+| batch      | pc3 /data/testing/*.png |
 
-[read more](./docs/readme_pc3_gpu.md)
+[read more](./docs/readme_gpu.md)
 
 ## Perception-Enhancing Utilities
 | tool      | description  | 
 | ------------ | ------------ |
 | pc3              | engine to induce depth perception from 3-array data |
-| pc3_utils        | tool with various depth, mesh, embedding processing utilities (normals, viewer, etc..) |
-| pc3_space_editor | mapping of spaces to meters, etc.. |
+| utils        | tool with various depth, mesh, embedding processing utilities (normals, viewer, etc..) |
+| space_editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
@@ -81,7 +82,7 @@ In-Progress:
 
 
 ## Roadamp
-Very rich roadmap with lots of features.
+Roadmap with lots of features.
 [roadmap](/docs/roadmap.md)
 
 
