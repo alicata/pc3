@@ -1,19 +1,27 @@
 ![perc3ption](/docs/perc_vision.png)
 
 
-Perception tool to reveal the hidden structure in high-dimensional streams from depth maps, neural encoding vectors, or other vectorized representations. 
+Perception tool to continuously reveal the hidden structure and failure modes in streams of depth sensing or procedurally generated 3d data. 
+
+## Overview
+Vision sensors deployed in the field or live experiments often require debugging or real-time inspection of failure modes. Typical visualizers are designed for offline datasets, simple localy connected device and observed as a generic blob (i.e point cloud), and ineffective tools to evaluate the contribution of individual samples to failure modes.
+This tool enables to deconstruct a stream and narrow down the contributing factors to failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from vision networks.
 
 ## Use cases 
-* depth stream visualization
-* inspection of sensing failures 
-* debugging neural representations
+* stream visualization at multiple scales
+* inspection of sensing failures
+* debugging neural image embeddings
+* continuous observation of unreliable or laggy streams
+
 
 ## Features
+* batch or stream processing mode
+* tolerant to choppy streams
 * fluid depth structure visualiation
 * observation: zooming, projection range, guided motions
 * playback: pause, step-by-step, slow-down
 * file stream probe
-* neural decoding of image embedding vectors 
+* neural decoding of image/sensor embedding vectors 
 
 ## Setup
 Run installation script,
@@ -31,20 +39,26 @@ install.sh
 
 ## Usage:
 ```
-pc3 data/*.png
+pc3 <stream source uri>
 ```
+
+|      | description  | 
+| ------------ | ------------ |
+| stream           |  |
+| batch      | tool with|
+
 [read more](./docs/readme_pc3_gpu.md)
 
 ## Perception-Enhancing Utilities
-| utility      | description  | 
+| tool      | description  | 
 | ------------ | ------------ |
-| pc3              | induce depth perception from 3-array data |
-| pc3_utils        | various depth and mesh processing utilities (normals, viewer, etc..) |
+| pc3              | engine to induce depth perception from 3-array data |
+| pc3_utils        | tool with various depth, mesh, embedding processing utilities (normals, viewer, etc..) |
 | pc3_space_editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
-pc3 adopts a stream based processing architecture, where streams are continously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine contisouly process the stream, and coordinates interaction with the user interface. 
+pc3 adopts a fault tolerant stream based processing architecture, where streams are continously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine contisouly process the stream, and coordinates interaction with the user interface. 
 
 ## Concepts: Observer, Motion Control, Probes  
 The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
