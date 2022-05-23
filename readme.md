@@ -4,17 +4,17 @@
 Tool to continuously reveal the hidden structure and failure modes in perception streams of various nature, like semiconductor depth sensing captures, embedding vectors from computer vision neural networks, etc...
 
 ## Overview
-Vision sensors deployed in the field or live experiments often require debugging or real-time inspection of failure modes. Common visualizers are designed either for offline datasets, and also typically render a generic structure as point cloud. This appraoch is unsuitable for evaluating the contribution of individual samples to failure modes.
-The pc3 tool enables to deconstruct a stream and narrow down the contributing factors to failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from computer vision neural networks. 
+Vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Common visualization tools typically render a generic structure as point cloud. This approach is unsuitable for evaluating the contribution of individual input samples to failure modes.
+The pc3 tool enables to deconstruct a stream and unlocks observability of the contributing factors of failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from computer vision neural networks. 
 
 ## Features
+* neural decoding of image/sensor embedding vectors 
 * batch or stream processing mode
 * tolerant to choppy streams
-* fluid depth structure visualiation
-* observation: zooming, projection range, guided motions
-* playback: pause, step-by-step, slow-down
+* fluid depth structure visualization
+* observation: microscoping zooming, projection range, guided motions
+* stream playback: pause, step-by-step, slow-down
 * file stream probe
-* neural decoding of image/sensor embedding vectors 
 
 ## Setup
 Run installation script,
@@ -38,10 +38,15 @@ pc3 <stream source uri>
 |  mode    | example | 
 | ------------ | ------------ |
 | file stream     | pc3 depth_file_stream.png |
-| socket stream   | pc3 localhost|
 | batch      | pc3 /data/testing/*.png |
 
-[read more](./docs/readme_gpu.md)
+Coming soon 
+|  mode    | example | 
+| ------------ | ------------ |
+| socket stream   | pc3 localhost|
+| neural decoding | pc3 network.h5 |
+
+[read more](./docs/readme_pc3_gpu.md)
 
 ## Perception-Enhancing Utilities
 | tool      | description  | 
@@ -61,13 +66,8 @@ The stream observer can guide the camera view through a composition of motion ke
 System to load and observe arbitrary mesh representations into the pipeline as Effect objects
 
 ![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
-## Obs sub-systems
-* mesh loading
-* resource effects: rendering programs as resources
-* effects selection
-*  xray layer
-* zoning
 
+[read more](./docs/architecture.md)
 
 
 ## Roadamp
