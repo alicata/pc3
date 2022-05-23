@@ -1,5 +1,10 @@
 # PC3 Roadmap
 
+## In-Progress:
+- [ ] frame transformation: from loaded object space to world space (256x256x256)
+- [ ] xray blending as layer shared across effects and graph nodes
+- [x] theme: add 'dark-to-bright' dark gray-to-white color mapping theme
+
 ## Observer: Frustrum, Space, CFs, Graph Tools
 Enable diverse coexistence with CPU, GPU, inter-network, inter-process parts
 
