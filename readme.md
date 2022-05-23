@@ -1,18 +1,11 @@
 ![perc3ption](/docs/perc_vision.png)
 
-
-Perception tool to continuously reveal the hidden structure and failure modes in streams of depth sensing or procedurally generated 3d data. 
+# pc3 - perception stream debugger 
+Tool to continuously reveal the hidden structure and failure modes in perception streams of various nature, like semiconductor depth sensing captures, embedding vectors from computer vision neural networks, etc...
 
 ## Overview
-Vision sensors deployed in the field or live experiments often require debugging or real-time inspection of failure modes. Typical visualizers are designed for offline datasets, simple localy connected device and observed as a generic blob (i.e point cloud), and ineffective tools to evaluate the contribution of individual samples to failure modes.
-This tool enables to deconstruct a stream and narrow down the contributing factors to failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from vision networks.
-
-## Use cases 
-* stream visualization at multiple scales
-* inspection of sensing failures
-* debugging neural image embeddings
-* continuous observation of unreliable or laggy streams
-
+Vision sensors deployed in the field or live experiments often require debugging or real-time inspection of failure modes. Common visualizers are designed either for offline datasets, and also typically render a generic structure as point cloud. This appraoch is unsuitable for evaluating the contribution of individual samples to failure modes.
+The pc3 tool enables to deconstruct a stream and narrow down the contributing factors to failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from computer vision neural networks. 
 
 ## Features
 * batch or stream processing mode
@@ -75,10 +68,6 @@ System to load and observe arbitrary mesh representations into the pipeline as E
 *  xray layer
 * zoning
 
-In-Progress:
-- [ ] frame transformation: from loaded object space to world space (256x256x256)
-- [ ] xray blending as layer shared across effects and graph nodes
-- [x] theme: add 'dark-to-bright' dark gray-to-white color mapping theme
 
 
 ## Roadamp
