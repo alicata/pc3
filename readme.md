@@ -7,6 +7,8 @@ Tool to continuously reveal the hidden structure and failure modes in perception
 Vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Common visualization tools typically render a generic structure as point cloud. This approach is unsuitable for evaluating the contribution of individual input samples to failure modes.
 The pc3 tool enables to deconstruct a stream and unlocks observability of the contributing factors of failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from computer vision neural networks. 
 
+![perc3ption](/docs/pc3_stream.png)
+
 ## Features
 * neural decoding of image/sensor embedding vectors 
 * batch or stream processing mode
