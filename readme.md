@@ -1,7 +1,7 @@
 ![perc3ption](/docs/perc_vision.png)
 
 # pc3 - perception stream debugger 
-Tool to continuously reveal the hidden structure and failure modes in perception streams of various nature, like semiconductor depth sensing captures, embedding vectors from computer vision neural networks, etc...
+Tool to continuously reveal the hidden structure and failure modes in perception streams of various nature.
 
 ## Overview
 Vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Common visualization tools typically render a generic structure as point cloud. This approach is unsuitable for evaluating the contribution of individual input samples to failure modes.
