@@ -38,6 +38,7 @@ pc3 <stream source uri>
 |  mode    | example | 
 | ------------ | ------------ |
 | file stream     | pc3 depth_file_stream.png |
+| file stream with observetion volume | pc3 depth_file_stream.png obs_volume.obj |
 | batch      | pc3 /data/testing/*.png |
 
 Coming soon 
