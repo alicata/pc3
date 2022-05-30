@@ -6,7 +6,7 @@ Tool to continuously reveal the hidden changing structure and failure modes in p
 ## Overview
 3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizers are unsuitable for evaluating the contribution of individual input samples to failure modes.
 
-This tool enables inspecting and deconstructing a stream and unlocks observability of the contributing factors of failure modes.  
+This tool enables inspecting and deconstructing a stream and unlocks its observable contributing factors.  
 
 ![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
 
@@ -16,9 +16,15 @@ This tool enables inspecting and deconstructing a stream and unlocks observabili
 * tolerant to choppy streams from remote devices
 * fluid depth structure visualization
 * stream playback: pause, step-by-step, slow-down
+* observation volumes to track violations on structure or perceptual assumptions
 
-## Upcoming Features
-* observation volumes to track events in regions of intereset  
+## Requirements and Current Limitations
+* python 3
+* gpu with opengl 3.4 support
+*  < 100k samples per frame
+* depth maps or 3d point cloud input stream
+
+## Upcoming in 2022
 * neural decoding for structure analysis and debugging
 * stream fusion or/and compression 
 * improved probe installation
