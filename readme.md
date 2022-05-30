@@ -1,7 +1,7 @@
 ![perc3ption](/docs/perc_vision.png)
 
 # pc3 - perception stream debugger 
-Tool to continuously reveal the hidden structure and failure modes in perception streams from 3d sensors or synthetically generated data. 
+Tool to continuously reveal the hidden changing structure and failure modes in perception streams, either from 3d sensors or procedurally generated. 
 
 ## Overview
 3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizers are unsuitable for evaluating the contribution of individual input samples to failure modes.
@@ -18,10 +18,10 @@ This tool enables inspecting and deconstructing a stream and unlocks observabili
 * stream playback: pause, step-by-step, slow-down
 
 ## Upcoming Features
-* observation volumes to track event in regions of intereset  
-* neural decoding for structure analysis / debugging
+* observation volumes to track events in regions of intereset  
+* neural decoding for structure analysis and debugging
 * stream fusion or/and compression 
-* improved probe installation on remote devices
+* improved probe installation
 
 ## Setup
 Run installation script,
@@ -67,8 +67,11 @@ Coming soon
 # Architecture
 pc3 adopts a fault tolerant stream based processing architecture, where streams are continuously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine continuosly processes the stream, and coordinates interaction with the user interface. 
 
-## Concepts: Observer, Motion Control, Probes  
-The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
+## Observer, Motion Control
+The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. 
+
+## Probe
+A probe installed on local device or remote node can continously poll data from a file stream, even if the file stream producer is unaware of being observed. 
 
 ## Observation Volume
 Load arbitrary observation volume shapes and track changes, noise or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
