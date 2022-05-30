@@ -11,41 +11,40 @@ This tool enables inspecting and deconstructing a stream and unlocks its observa
 ![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
 
 ## Features
-* enhanced observation: microscoping zooming, projection range, guided motions
-* batch or stream processing mode
-* tolerant to choppy streams from remote devices
-* fluid depth structure visualization
-* stream playback: pause, step-by-step, slow-down
-* observation volumes to track violations on structure or perceptual assumptions
+- [x] observation modes: microscoping zooming, x-ray, guided motions
+- [x] distance field modulation
+- [x] batch or stream processing mode
+- [x] tolerant to choppy streams from remote devices
+- [x] fluid depth structure visualization
+- [x] stream playback: pause, step-by-step, slow-down
+- [ ] :rocket: observation volumes to track violations on assumptions :rocket:
+ 
+## Upcoming in 2022
+- 🔥 neural decoding for structure analysis and debugging. 
+- :star: stream fusion or/and compression. 
+- :star: improved probe installation
 
 ## Requirements and Current Limitations
-* python 3
-* gpu with opengl 3.4 support
 *  < 100k samples per frame
 * depth maps or 3d point cloud input stream
-
-## Upcoming in 2022
-* neural decoding for structure analysis and debugging
-* stream fusion or/and compression 
-* improved probe installation
+* python 3, gpu harware with opengl 3.4 support
+* 4GB RAM in host memory
 
 ## Setup
-Run installation script,
+Execute the installation script corresponding to the OS platform running the PC3 tool, 
 
-Windows 10/11
 ```
-install.cmd
+install_windows_os.cmd
 ```
-
-Linux - cooming soon
 ```
-install.sh
+install_linux_os.sh
 ```
 
 
 ## Usage:
+Start perception engine and link to a source stream, optionally attach an encoder to the stream for structure analysis:
 ```
-pc3 <stream source uri>
+pc3 <source stream> | <encoder network model>
 ```
 
 |  mode    | example | 
@@ -57,8 +56,8 @@ pc3 <stream source uri>
 Coming soon 
 |  mode    | example | 
 | ------------ | ------------ |
-| socket stream   | pc3 localhost|
-| neural decoding | pc3 network.h5 |
+| network socket stream   | pc3 localhost 2500|
+| neural decoding | pc3 ./3d_knowledge_network.h5 ./data_stream.png |
 
 [read more](./docs/readme_pc3_gpu.md)
 
@@ -66,8 +65,8 @@ Coming soon
 | tool      | description  | 
 | ------------ | ------------ |
 | pc3              | engine to induce depth perception from 3-array data |
-| utils        | tool with various depth, volume, embedding processing utilities (normals, viewer, etc..) |
-| space_editor | mapping of spaces to meters, etc.. |
+| utils        | various depth, volume, embedding processing utilities (normals, merge volumes, etc..) |
+| space editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
@@ -80,7 +79,7 @@ The stream observer can guide the camera view through a composition of motion ke
 A probe installed on local device or remote node can continously poll data from a file stream, even if the file stream producer is unaware of being observed. 
 
 ## Observation Volume
-Load arbitrary observation volume shapes and track changes, noise or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
+Load arbitrary observation volume shapes and track changes, noise or events that occurs inside of it and violate assumptions.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
 
 ![perc3ption](/docs/pc3_stream.png)
 
