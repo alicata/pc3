@@ -1,56 +1,63 @@
 ![perc3ption](/docs/perc_vision.png)
 
-# pc3 - perception stream debugger 
-Tool to continuously reveal the hidden structure and failure modes in perception streams from 3d sensors or synthetically generated data. 
+# p3r - perception debugger 
+Tool to continuously reveal the hidden changing structure and failure modes in perception streams, either from 3d sensors or procedurally generated. 
 
 ## Overview
-3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizer are unsuitable for evaluating the contribution of individual input samples to failure modes.
+3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizers are unsuitable for evaluating the contribution of individual input samples to failure modes.
 
-This tool enables inspecting and deconstructing a stream and unlocks observability of the contributing factors of failure modes.  
+This tool enables inspecting and deconstructing a stream and unlocks its observable contributing factors.  
 
 ![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
 
 ## Features
-* enhanced observation: microscoping zooming, projection range, guided motions
-* batch or stream processing mode
-* tolerant to choppy streams from remote devices
-* fluid depth structure visualization
-* stream playback: pause, step-by-step, slow-down
+- [x] observation modes: microscoping zooming, x-ray, guided motions
+- [x] distance field modulation
+- [x] batch or stream processing mode
+- [x] tolerant to choppy streams from remote devices
+- [x] fluid depth structure visualization
+- [x] stream playback: pause, step-by-step, slow-down
+- [ ] :rocket: observation volumes to track violations on assumptions :rocket:
+ 
+## Upcoming in 2022
+- 🔥 neural decoding for structure analysis and debugging. 
+- :star: stream fusion or/and compression. 
+- :star: improved probe installation
 
-## Upcoming Features
-* observation volumes to track event in regions of intereset  
-* neural decoding for structure analysis / debugging
+## Requirements and Current Limitations
+*  < 100k samples per frame
+* depth maps or 3d point cloud input stream
+* python 3, gpu harware with opengl 3.4 support
+* 4GB RAM in host memory
 
 ## Setup
-Run installation script,
+Execute the installation script corresponding to the OS platform running the PC3 tool, 
 
-Windows 10/11
 ```
-install.cmd
+install_windows_os.cmd
 ```
-
-Linux - cooming soon
 ```
-install.sh
+install_linux_os.sh
 ```
 
 
 ## Usage:
+Start perception engine and link to a source stream, optionally attach an encoder to the stream for structure analysis:
 ```
-pc3 <stream source uri>
+pc3 <source stream> | <encoder network model>
 ```
 
 |  mode    | example | 
 | ------------ | ------------ |
-| file stream     | pc3 depth_file_stream.png |
-| file stream with observetion volume | pc3 depth_file_stream.png obs_volume.obj |
+| file stream     | pc3 ./depth_file_stream.png |
+| file stream with observation volume | pc3 ./depth_file_stream.png ./obs_volume.obj |
 | batch      | pc3 /data/testing/*.png |
 
 Coming soon 
 |  mode    | example | 
 | ------------ | ------------ |
-| socket stream   | pc3 localhost|
-| neural decoding | pc3 network.h5 |
+| network socket stream   | pc3 localhost 2500|
+| neural decoding | pc3 ./3d_knowledge_network.h5 ./data_stream.png |
 
 [read more](./docs/readme_pc3_gpu.md)
 
@@ -58,18 +65,21 @@ Coming soon
 | tool      | description  | 
 | ------------ | ------------ |
 | pc3              | engine to induce depth perception from 3-array data |
-| utils        | tool with various depth, mesh, embedding processing utilities (normals, viewer, etc..) |
-| space_editor | mapping of spaces to meters, etc.. |
+| utils        | various depth, volume, embedding processing utilities (normals, merge volumes, etc..) |
+| space editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
-pc3 adopts a fault tolerant stream based processing architecture, where streams are continously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine contisouly process the stream, and coordinates interaction with the user interface. 
+pc3 adopts a fault tolerant stream based processing architecture, where streams are continuously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine continuosly processes the stream, and coordinates interaction with the user interface. 
 
-## Concepts: Observer, Motion Control, Probes  
-The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
+## Observer, Motion Control
+The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. 
+
+## Probe
+A probe installed on local device or remote node can continously poll data from a file stream, even if the file stream producer is unaware of being observed. 
 
 ## Observation Volume
-Load arbitrary mesh / volume shapes and observe changes or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
+Load arbitrary observation volume shapes and track changes, noise or events that occurs inside of it and violate assumptions.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
 
 ![perc3ption](/docs/pc3_stream.png)
 
