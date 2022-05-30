@@ -4,7 +4,7 @@
 Tool to continuously reveal the hidden structure and failure modes in perception streams from 3d sensors or synthetically generated data. 
 
 ## Overview
-3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizer are unsuitable for evaluating the contribution of individual input samples to failure modes.
+3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizers are unsuitable for evaluating the contribution of individual input samples to failure modes.
 
 This tool enables inspecting and deconstructing a stream and unlocks observability of the contributing factors of failure modes.  
 
@@ -20,6 +20,8 @@ This tool enables inspecting and deconstructing a stream and unlocks observabili
 ## Upcoming Features
 * observation volumes to track event in regions of intereset  
 * neural decoding for structure analysis / debugging
+* stream fusion or/and compression 
+* improved probe installation on remote devices
 
 ## Setup
 Run installation script,
@@ -42,8 +44,8 @@ pc3 <stream source uri>
 
 |  mode    | example | 
 | ------------ | ------------ |
-| file stream     | pc3 depth_file_stream.png |
-| file stream with observetion volume | pc3 depth_file_stream.png obs_volume.obj |
+| file stream     | pc3 ./depth_file_stream.png |
+| file stream with observation volume | pc3 ./depth_file_stream.png ./obs_volume.obj |
 | batch      | pc3 /data/testing/*.png |
 
 Coming soon 
@@ -58,18 +60,18 @@ Coming soon
 | tool      | description  | 
 | ------------ | ------------ |
 | pc3              | engine to induce depth perception from 3-array data |
-| utils        | tool with various depth, mesh, embedding processing utilities (normals, viewer, etc..) |
+| utils        | tool with various depth, volume, embedding processing utilities (normals, viewer, etc..) |
 | space_editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
-pc3 adopts a fault tolerant stream based processing architecture, where streams are continously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine contisouly process the stream, and coordinates interaction with the user interface. 
+pc3 adopts a fault tolerant stream based processing architecture, where streams are continuously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine continuosly processes the stream, and coordinates interaction with the user interface. 
 
 ## Concepts: Observer, Motion Control, Probes  
 The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
 
 ## Observation Volume
-Load arbitrary mesh / volume shapes and observe changes or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
+Load arbitrary observation volume shapes and track changes, noise or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
 
 ![perc3ption](/docs/pc3_stream.png)
 
