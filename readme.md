@@ -1,20 +1,25 @@
 ![perc3ption](/docs/perc_vision.png)
 
 # pc3 - perception stream debugger 
-Tool to continuously reveal the hidden structure and failure modes in perception streams of various nature, like semiconductor depth sensing captures, embedding vectors from computer vision neural networks, etc...
+Tool to continuously reveal the hidden structure and failure modes in perception streams from 3d sensors or synthetically generated data. 
 
 ## Overview
-Vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Common visualization tools typically render a generic structure as point cloud. This approach is unsuitable for evaluating the contribution of individual input samples to failure modes.
-The pc3 tool enables to deconstruct a stream and unlocks observability of the contributing factors of failure modes. The tool works also with sensor streams encoded into an embedding vector, like in neural representations from computer vision neural networks. 
+3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizer are unsuitable for evaluating the contribution of individual input samples to failure modes.
+
+This tool enables inspecting and deconstructing a stream and unlocks observability of the contributing factors of failure modes.  
+
+![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
 
 ## Features
-* neural decoding of image/sensor embedding vectors 
+* enhanced observation: microscoping zooming, projection range, guided motions
 * batch or stream processing mode
-* tolerant to choppy streams
+* tolerant to choppy streams from remote devices
 * fluid depth structure visualization
-* observation: microscoping zooming, projection range, guided motions
 * stream playback: pause, step-by-step, slow-down
-* file stream probe
+
+## Upcoming Features
+* observation volumes to track event in regions of intereset  
+* neural decoding for structure analysis / debugging
 
 ## Setup
 Run installation script,
@@ -63,10 +68,12 @@ pc3 adopts a fault tolerant stream based processing architecture, where streams 
 ## Concepts: Observer, Motion Control, Probes  
 The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. A probe can continously poll data from a file stream, even if the file stream producer is anaware of being observed. 
 
-## Obs Volume
-System to load and observe arbitrary mesh representations into the pipeline as Effect objects
+## Observation Volume
+Load arbitrary mesh / volume shapes and observe changes or events that occur within it.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
 
-![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
+![perc3ption](/docs/pc3_stream.png)
+
+
 
 [read more](./docs/architecture.md)
 
