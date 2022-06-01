@@ -1,6 +1,6 @@
 ![perc3ption](/docs/perc_vision.png)
 
-# pc3 - perception stream debugger 
+# p3r - perception debugger 
 Tool to continuously reveal the hidden changing structure and failure modes in perception streams, either from 3d sensors or procedurally generated. 
 
 ## Overview
