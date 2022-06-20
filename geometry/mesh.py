@@ -120,6 +120,14 @@ class MeshLoader:
 class MeshCollider:
     def __init__(self, mesh):
         self.mesh = mesh
+        self.create_bounding_sphere()
+
+    def create_bounding_sphere(self):
+        self.sphere = {
+            'inside' : [0, 0],
+            'away'   : [0, 0],
+            'outside': []
+        }  
 
     def check_point(self, p, max_faces=12):
         """check cpu collision between point and mesh in host memory

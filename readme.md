@@ -1,12 +1,12 @@
 ![perc3ption](/docs/perc_vision.png)
 
-# p3r - perception debugger 
+# p3k - perception debugger 
 Tool to continuously reveal the hidden changing structure and failure modes in perception streams, either from 3d sensors or procedurally generated. 
 
 ## Overview
-3d vision sensors deployed in the field often require debugging or real-time inspection of failure modes. Generic point cloud visualizers are unsuitable for evaluating the contribution of individual input samples to failure modes.
+Connected and distributed 3d vision sensors often require debugging or real-time inspection of failure modes. 
 
-This tool enables inspecting and deconstructing a stream and unlocks its observable contributing factors.  
+The p3k tool enables inspecting and deconstructing a stream and unlocks its observable contributing factors, and facilitating tracking of failure modes.  
 
 ![xray](https://user-images.githubusercontent.com/10095423/103164670-27641f80-47c3-11eb-93bc-e81bda8b871d.png)
 
@@ -19,10 +19,8 @@ This tool enables inspecting and deconstructing a stream and unlocks its observa
 - [x] stream playback: pause, step-by-step, slow-down
 - [ ] :rocket: observation volumes to track violations on assumptions :rocket:
  
-## Upcoming in 2022
+## Upcoming 
 - 🔥 neural decoding for structure analysis and debugging. 
-- :star: stream fusion or/and compression. 
-- :star: improved probe installation
 
 ## Requirements and Current Limitations
 *  < 100k samples per frame
@@ -31,46 +29,46 @@ This tool enables inspecting and deconstructing a stream and unlocks its observa
 * 4GB RAM in host memory
 
 ## Setup
-Execute the installation script corresponding to the OS platform running the PC3 tool, 
+Execute the installation script corresponding to the OS platform running the p3k tool, 
 
 ```
 install_windows_os.cmd
 ```
 ```
-install_linux_os.sh
+install_linux_os.sh 
 ```
 
 
 ## Usage:
 Start perception engine and link to a source stream, optionally attach an encoder to the stream for structure analysis:
 ```
-pc3 <source stream> | <encoder network model>
+p3k <source stream> | <encoder network model>
 ```
 
 |  mode    | example | 
 | ------------ | ------------ |
-| file stream     | pc3 ./depth_file_stream.png |
-| file stream with observation volume | pc3 ./depth_file_stream.png ./obs_volume.obj |
-| batch      | pc3 /data/testing/*.png |
+| file stream     | p3k ./depth_file_stream.png |
+| file stream with observation volume | p3k ./depth_file_stream.png ./obs_volume.obj |
+| batch      | p3k /data/testing/*.png |
 
 Coming soon 
 |  mode    | example | 
 | ------------ | ------------ |
-| network socket stream   | pc3 localhost 2500|
-| neural decoding | pc3 ./3d_knowledge_network.h5 ./data_stream.png |
+| network socket stream   | p3k localhost 2500|
+| neural decoding | p3k ./3d_knowledge_network.h5 ./data_stream.png |
 
-[read more](./docs/readme_pc3_gpu.md)
+[read more](./docs/readme_p3k_gpu.md)
 
 ## Perception-Enhancing Utilities
 | tool      | description  | 
 | ------------ | ------------ |
-| pc3              | engine to induce depth perception from 3-array data |
+| p3k              | engine to induce depth perception from 3-array data |
 | utils        | various depth, volume, embedding processing utilities (normals, merge volumes, etc..) |
 | space editor | mapping of spaces to meters, etc.. |
 
 
 # Architecture
-pc3 adopts a fault tolerant stream based processing architecture, where streams are continuously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine continuosly processes the stream, and coordinates interaction with the user interface. 
+p3k adopts a fault tolerant stream based processing architecture, where streams are continuously and immedialy produced as file stream (local or distributed), and shared memory buffers from different sources in the local computing node. The engine continuosly processes the stream, and coordinates interaction with the user interface. 
 
 ## Observer, Motion Control
 The stream observer can guide the camera view through a composition of motion key commands. The view is constraint to maximize understaning of the depth structure inside an observation volume. 
@@ -81,7 +79,7 @@ A probe installed on local device or remote node can continously poll data from 
 ## Observation Volume
 Load arbitrary observation volume shapes and track changes, noise or events that occurs inside of it and violate assumptions.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
 
-![perc3ption](/docs/pc3_stream.png)
+![perc3ption](/docs/p3k_stream.png)
 
 
 
