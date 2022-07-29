@@ -18,42 +18,51 @@ import transform.frame as tf
 from utils.m import *
 from utils import path
 
-
 class Dataset:
-    def __init(self, dataset_name='default'):
-        self.name = dataset_name    
-
+    def __init__(self, op, dataset_name='default'):
+        self.name = dataset_name
+        self.volume = op['render_volume']
+ 
     def load_point_data(self, filepath='data/depth8.png'):
         """Load depth8 image (rs cs) to opengl cordinate system"""
         depth8 = cv2.imread(filepath)[:,:,0]
-            
-        depth8 = cv2.resize(depth8, (256, 256), interpolation=cv2.INTER_NEAREST)
+        W, H, D = self.volume
+
+        # resample to desired observed volume resolution            
+        depth8 = cv2.resize(depth8, (W, H), interpolation=cv2.INTER_NEAREST)
         h, w = depth8.shape
         d = 1
 
+        # transform x,y,z to int32, int32, float64 (needed to match frustum coord space)
         x = np.tile(np.arange(w), w).flatten()
         y = np.repeat(np.arange(h), h).flatten()
         z = depth8.flatten() * 1.0
-
+    
+        # remove z too close, adjust x,y to remove entire point
         min_z, max_z = 0, 255 
         x = x[z>min_z]
         y = y[z>min_z]
         z = z[z>min_z]
 
-        x, y, z = tf.xyz_device_to_eye_gl(x,y,z, [w, h, 255]) 
+        x, y, z = tf.xyz_device_to_eye_gl(x,y,z, [w, h, max_z])
+     
+        # scale z as per desired volume requirements
+        factor = D/max_z
+        z = (z.astype(dtype=np.float64) * factor )
+
         pts = np.dstack([x, y, z])
-        #pts = pts[0][z < 0]
         return pts, w*h, (w, h, d)
 
     def gen_point_data(self):
-        w, h, d = 256, 256, 256
+        W, H, D = self.volume
+        w, h, d = W, D, 1
         num_samples = w*h
         x = (np.tile(np.arange(w), w)) 
         y = (np.repeat(np.arange(h), h))
-        z = np.random.randint(0, 255, d*d) 
+        z = np.random.randint(0, 255, d*d) * 1.0
 
         x, y, z = tf.xyz_device_to_eye_gl(x,y,z) 
-        coordinates = np.dstack([x, y, z])
+        coordinates = np.dstack([x, y, z*D/255])
 
         return coordinates, w*h, (w, h, d)
 
@@ -78,18 +87,23 @@ class Window(mglw.WindowConfig):
 
 
 class Camera:
-    def __init__(self, win_size):
+    def __init__(self, op, win_size):
         self.aspect_ratio = win_size[0] / win_size[1]
         self.win = win_size
+        self.volume = op['render_volume']
         self.reset()
 
     def reset(self):
+        W, H, D = self.volume
+        self.world_size = vec3(W, H, D)
         self.world_size = vec3(256, 256, 256)
-        
-        self.fov = 90.0
         self.cam_o = vec3(128, 128, 64)
+        self.cam_o = vec3(128, 128, 64)
+        self.fov = 90.0
+        self.cam_o = vec3(W/2, H/2, D/4)
         self.cam_pos = self.cam_o
-        self.cam_target = vec3(128, 128, -128) 
+        self.cam_target = vec3(W/2, H/2, -D/2) 
+        self.cam_target = vec3(128, 128, -128)
         self.cam_up = [0, 1, 0]
         self.stepper = [0, 0, 0]
         self.speed = 1.0
@@ -206,6 +220,7 @@ class PC3(Window):
             'collider_selection' : 0, # all zone selected
             "xray" : "off",
             "clear_color" : [.008, 0.09, 0.16],
+            "render_volume" : [256, 256, 256],
             "-":"",
             }
         }
@@ -215,10 +230,10 @@ class PC3(Window):
         super().__init__(**kwargs)
 
         self.off = {'x' : 0, 'y' : 0 ,'z' : 0}
-        self.cam = Camera(PC3.window_size)
         self.time = dict.fromkeys({'render', 'render:load'}, 0)
         self.cfg = self.load_config() 
         self.op = self.cfg['op']
+        self.cam = Camera(self.op, PC3.window_size)
 
         def get_mesh_files():
             meshpattern = os.environ.get('P3_MESHPATH', False)
@@ -267,13 +282,14 @@ class PC3(Window):
             print("specify input file in PC3_FILEPATH") 
             exit(0)
         self.filepath = it.cycle(glob.glob(pattern))
-        ds = Dataset()
+        ds = Dataset(self.op)
         try:
             self.points, self.num_samples, self.dim = ds.load_point_data(next(self.filepath))
         except:
             self.points = np.array([np.array([0,0,0])]).astype(np.float64) 
             self.num_samples = 1
-            self.dim = (256, 256, 1) 
+            W, H, D = self.op['render_volume']
+            self.dim = (W, H, 1) 
 
         def add_effect(e, effect, effect_name, num_samples):
             theme = {'mody' : 'mody', 'firepit' : 'firepit', 'zone':'illuminated',
@@ -335,7 +351,7 @@ class PC3(Window):
             try:
                 filepath = next(self.filepath)
                 print(filepath)
-                self.points, self.num_samples, self.dim = Dataset().load_point_data(filepath)
+                self.points, self.num_samples, self.dim = Dataset(self.op).load_point_data(filepath)
                 self.time['render:load'] = time.time()
             except:
                 pass

@@ -3,7 +3,7 @@ import numpy as np
 
 def depth_to_xyz_device(depth8):
     """Convert depth image coordinate system to opengl cs."""
-    h, w = depth.shape[0:2]
+    h, w = depth8.shape[0:2]
     x = np.tile(np.arange(w), w)
     y = np.repeat(np.arange(h), h)
     z = depth8.flatten()
