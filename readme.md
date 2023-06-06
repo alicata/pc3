@@ -19,7 +19,7 @@ The p3k tool enables inspecting and deconstructing a stream and unlocks its obse
 - [x] stream playback: pause, step-by-step, slow-down
 - [ ] :rocket: observation volumes to track violations on assumptions :rocket:
  
-## Upcoming 
+## Future Ideas
 - 🔥 neural decoding for structure analysis and debugging. 
 
 ## Requirements and Current Limitations
@@ -78,9 +78,6 @@ A probe installed on local device or remote node can continously poll data from 
 
 ## Observation Volume
 Load arbitrary observation volume shapes and track changes, noise or events that occurs inside of it and violate assumptions.  The volume representation loads into the pipeline as ModernGL GPU effect objects.
-
-![perc3ption](/docs/p3k_stream.png)
-
 
 
 [read more](./docs/architecture.md)
