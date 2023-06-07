@@ -1,4 +1,4 @@
-![perc3ption](/docs/perc_vision.png)
+
 
 # p3k - perception debugger 
 Tool to continuously reveal the hidden changing structure and failure modes in perception streams, either from 3d sensors or procedurally generated. 
