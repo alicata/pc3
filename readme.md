@@ -40,9 +40,9 @@ install_linux_os.sh
 
 
 ## Usage:
-Start perception engine and link to a source stream, optionally attach an encoder to the stream for structure analysis:
+Start perception engine and link to a source stream for visual analysis:
 ```
-p3k <source stream> | <encoder network model>
+p3k <source stream> 
 ```
 
 |  mode    | example | 
@@ -51,7 +51,7 @@ p3k <source stream> | <encoder network model>
 | file stream with observation volume | p3k ./depth_file_stream.png ./obs_volume.obj |
 | batch      | p3k /data/testing/*.png |
 
-Coming soon 
+### Future Options
 |  mode    | example | 
 | ------------ | ------------ |
 | network socket stream   | p3k localhost 2500|
