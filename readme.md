@@ -1,10 +1,10 @@
 
 
 # p3k - perception debugger 
-Tool to continuously reveal the hidden changing structure and failure modes in perception streams (3d sensors) 
+Inspection tool to continuously reveal the hidden changing structure and failure modes in 3d perception streams  
 
 ## Overview
-Connected and distributed vision sensors often require debugging or real-time inspection of failure modes. 
+Connected and distributed 3d sensors often require debugging or real-time inspection of failure modes. 
 
 The p3k tool enables inspecting and deconstructing a stream and unlocks its observable contributing factors, and facilitating tracking of failure modes.  
 
